@@ -51,4 +51,13 @@ public class ChessHelper {
 
         return nextPosition;
     }
+
+    public static ChessBoardModel applyMoveAndSwitch(
+            ChessRules rules, ChessPosition position, ChessMovePath move)
+            throws IllegalMoveException {
+        ChessBoardModel model = applyMove(rules, position, move);
+        model.nextPlayerTurn();
+        return model;
+    }
+
 }
