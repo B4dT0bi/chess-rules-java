@@ -316,4 +316,23 @@ public class PgnMarshallerImplTest {
 
         assertEquals("dxc1+=N", pgnMarshaller.convertMoveToPgn(model, promotionMovePath));
     }
+
+    @Test
+    public void testMultiGameLoading() throws IOException, IllegalMoveException, PgnMoveException {
+        Collection<String> moves;
+
+        moves = pgnMarshaller.importGame(this.getClass().getResourceAsStream("empty_game.pgn"));
+        assertEquals(0, moves.size());
+        moves = pgnMarshaller.importGame(this.getClass().getResourceAsStream("sample_game.pgn"));
+        assertEquals(85, moves.size());
+
+        try (InputStream gamesStream = this.getClass().getResourceAsStream("multiple_games.pgn")) {
+            moves = pgnMarshaller.importGame(gamesStream);
+            assertEquals(85, moves.size());
+//        moves = pgnMarshaller.importGame(gamesStream);
+//        assertEquals(4, moves.size());
+//        moves = pgnMarshaller.importGame(gamesStream);
+//        assertEquals(85, moves.size());
+        }
+    }
 }

@@ -302,56 +302,67 @@ public class PgnMarshallerImpl implements PgnMarshaller {
 
     @Override
     public Collection<String> importGame(InputStream pgnStream) throws IOException {
-        try {
-            Reader reader = new InputStreamReader(pgnStream, "UTF-8");
-            BufferedReader bufferedReader = new BufferedReader(reader);
+        Reader reader = new InputStreamReader(pgnStream, "UTF-8");
+        BufferedReader bufferedReader = new BufferedReader(reader);
 
-            String whitePlayerName = "White player";
-            String blackPlayerName = "Black player";
-            Date gameDate = new Date();
-            List<String> moves = new LinkedList<String>();
+        String whitePlayerName = "White player";
+        String blackPlayerName = "Black player";
+        Date gameDate = new Date();
+        int emptyLines = 0;
+        List<String> moves = new LinkedList<>();
 
-            String line = bufferedReader.readLine();
-            while (line != null) {
-                String preprocessed = preprocess(line);
+        String line = bufferedReader.readLine();
+        while (line != null) {
+            String preprocessed = preprocess(line);
 
-                Pattern header = Pattern.compile(PATTERN_HEADER);
-                Matcher headerMatcher = header.matcher(preprocessed);
+            if (preprocessed.isEmpty()) {
+                emptyLines += 1;
 
-                if (headerMatcher.matches()) {
-                    String key = headerMatcher.group(1);
-                    String val = headerMatcher.group(2);
-                    log.debug("" + key + " = " + val);
-
-                    if (StringUtils.equalsIgnoreCase("white", key)) {
-                        whitePlayerName = val;
-                    } else if (StringUtils.equalsIgnoreCase("black", key)) {
-                        blackPlayerName = val;
-                    } else if (StringUtils.equalsIgnoreCase("date", key)) {
-                        SimpleDateFormat df = new SimpleDateFormat(DATEFORMAT_PGN);
-                        try {
-                            gameDate = df.parse(val);
-                        } catch (ParseException e) {
-                            throw new IOException("Invalid date format in pgn header " + e);
-                        }
-                    }
-                } else {
-                    String[] tokens = preprocessed.split(" +");
-
-                    for (String token : tokens) {
-                        if (!StringUtils.isEmpty(token) && !Character.isDigit(token.charAt(0))) {
-                            moves.add(token);
-                        }
-                    }
+                // A second empty line marks the enf of the moves.
+                if (emptyLines == 2) {
+                    break;
                 }
-
-                line = bufferedReader.readLine();
             }
 
-            return moves;
-        } finally {
-            pgnStream.close();
+            // An empty line after the moves marks the end of the moves.
+            if (!moves.isEmpty() && preprocessed.isEmpty()) {
+                break;
+            }
+
+            Pattern header = Pattern.compile(PATTERN_HEADER);
+            Matcher headerMatcher = header.matcher(preprocessed);
+
+            if (headerMatcher.matches()) {
+                String key = headerMatcher.group(1);
+                String val = headerMatcher.group(2);
+                log.debug("" + key + " = " + val);
+
+                if (StringUtils.equalsIgnoreCase("white", key)) {
+                    whitePlayerName = val;
+                } else if (StringUtils.equalsIgnoreCase("black", key)) {
+                    blackPlayerName = val;
+                } else if (StringUtils.equalsIgnoreCase("date", key)) {
+                    SimpleDateFormat df = new SimpleDateFormat(DATEFORMAT_PGN);
+                    try {
+                        gameDate = df.parse(val);
+                    } catch (ParseException e) {
+                        throw new IOException("Invalid date format in pgn header " + e);
+                    }
+                }
+            } else {
+                String[] tokens = preprocessed.split(" +");
+
+                for (String token : tokens) {
+                    if (!StringUtils.isEmpty(token) && !Character.isDigit(token.charAt(0))) {
+                        moves.add(token);
+                    }
+                }
+            }
+
+            line = bufferedReader.readLine();
         }
+
+        return moves;
     }
 
     private void appendPgnHeader(StringBuilder text, String name, String value) {
