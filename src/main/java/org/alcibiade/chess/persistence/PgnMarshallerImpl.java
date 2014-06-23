@@ -1,4 +1,4 @@
-package org.alcibiade.chess.rules;
+package org.alcibiade.chess.persistence;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +24,11 @@ import org.alcibiade.chess.model.ChessPosition;
 import org.alcibiade.chess.model.ChessSide;
 import org.alcibiade.chess.model.IllegalMoveException;
 import org.alcibiade.chess.model.PgnMoveException;
+import org.alcibiade.chess.rules.Castling;
+import org.alcibiade.chess.rules.ChessHelper;
+import org.alcibiade.chess.rules.ChessRules;
+import org.alcibiade.chess.rules.PieceLocator;
+import org.alcibiade.chess.rules.PieceMoveManager;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

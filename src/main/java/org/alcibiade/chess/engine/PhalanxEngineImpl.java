@@ -2,7 +2,7 @@ package org.alcibiade.chess.engine;
 
 import javax.annotation.PostConstruct;
 import org.alcibiade.chess.engine.process.ExternalProcessFactory;
-import org.alcibiade.chess.rules.PgnMarshaller;
+import org.alcibiade.chess.persistence.PgnMarshaller;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.regex.Pattern;

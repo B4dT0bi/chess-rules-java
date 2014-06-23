@@ -16,7 +16,7 @@ import org.alcibiade.chess.model.IllegalMoveException;
 import org.alcibiade.chess.model.PgnMoveException;
 import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
 import org.alcibiade.chess.rules.ChessRules;
-import org.alcibiade.chess.rules.PgnMarshaller;
+import org.alcibiade.chess.persistence.PgnMarshaller;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;

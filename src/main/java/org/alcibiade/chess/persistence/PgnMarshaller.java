@@ -1,4 +1,4 @@
-package org.alcibiade.chess.rules;
+package org.alcibiade.chess.persistence;
 
 import java.io.IOException;
 import java.io.InputStream;
