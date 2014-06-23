@@ -13,6 +13,7 @@ import org.alcibiade.chess.model.ChessGameStatus;
 import org.alcibiade.chess.model.ChessMovePath;
 import org.alcibiade.chess.model.ChessPiece;
 import org.alcibiade.chess.model.ChessPieceType;
+import org.alcibiade.chess.model.ChessPosition;
 import org.alcibiade.chess.model.ChessSide;
 import org.alcibiade.chess.model.IllegalMoveException;
 import org.alcibiade.chess.model.PgnMoveException;
@@ -20,6 +21,8 @@ import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
 import org.alcibiade.chess.persistence.PgnBookReader;
 import org.alcibiade.chess.rules.ChessRules;
 import org.alcibiade.chess.persistence.PgnMarshaller;
+import org.alcibiade.chess.rules.ChessHelper;
+import org.assertj.core.api.Assertions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -342,5 +345,28 @@ public class PgnMarshallerImplTest {
             assertEquals(85, bookReader.readGame().getMoves().size());
             assertEquals(null, bookReader.readGame());
         }
+    }
+
+    @Test
+    public void testCheckAfterCastling() throws PgnMoveException, IllegalMoveException {
+        // Sequence taken from Bareev vs. Adams 1991
+        String moves = "d4 d6 Nf3 Bg4 c4 Nd7 Qb3 Rb8 Be3 c6 Nc3 Ngf6 Nd2 Qa5 d5 e5 "
+                + "f3 Bf5 Bf2 e4 g4 Bg6 g5 Nh5 Bh3 Be7 Bxd7+ Kxd7 c5 cxd5 "
+                + "Qxd5 Qb4 cxd6 Nf4 Qb3 Bxd6 Qxb4 Bxb4 Bg3 e3 Nb3 Ne6";
+
+        ChessPosition position = chessRules.getInitialPosition();
+
+        for (String pgn : moves.split(" ")) {
+            ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, pgn);
+            position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
+        }
+
+        // Next move's castling will create a check situation.
+        ChessMovePath castleMovePath1 = pgnMarshaller.convertPgnToMove(position, "O-O-O");
+        ChessMovePath castleMovePath2 = pgnMarshaller.convertPgnToMove(position, "O-O-O+");
+
+        Assertions.assertThat(ChessHelper.isCheck(chessRules, position, castleMovePath1, true)).isEqualTo(true);
+        Assertions.assertThat(castleMovePath1).isEqualToComparingFieldByField(castleMovePath2);
+        Assertions.assertThat(pgnMarshaller.convertMoveToPgn(position, castleMovePath1)).isEqualTo("O-O-O+");
     }
 }

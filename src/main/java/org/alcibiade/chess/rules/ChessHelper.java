@@ -16,6 +16,17 @@ public class ChessHelper {
     private ChessHelper() {
     }
 
+    /**
+     * Check if a move would lead to a Check situation.
+     *
+     * @param rules the chess rules component
+     * @param position the initial position
+     * @param move the move to check
+     * @param swapSides if true check if the move would lead to a check in favor of the player moving, if false for the
+     * opponent.
+     * @return
+     * @throws IllegalMoveException
+     */
     public static boolean isCheck(ChessRules rules, ChessPosition position, ChessMovePath move, boolean swapSides)
             throws IllegalMoveException {
         ChessBoardModel nextPosition = applyMove(rules, position, move);

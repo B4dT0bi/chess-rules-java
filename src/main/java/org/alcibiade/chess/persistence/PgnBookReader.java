@@ -82,16 +82,18 @@ public class PgnBookReader implements Closeable {
                 } else if (StringUtils.equalsIgnoreCase("date", key)) {
                     SimpleDateFormat df = new SimpleDateFormat(DATEFORMAT_PGN);
                     try {
-                        gameDate = df.parse(val);
+                        gameDate = df.parse(val.replaceAll("\\?\\?", "01"));
                     } catch (ParseException e) {
                         throw new IOException("Invalid date format in pgn header " + e);
                     }
                 }
             } else {
-                String[] tokens = preprocessed.split(" +");
+                // Remove move numbers from the contents.                
+                String[] tokens = preprocessed.replaceAll("(^| )[0-9]+\\.", " ").split(" +");
 
                 for (String token : tokens) {
-                    if (!StringUtils.isEmpty(token) && !Character.isDigit(token.charAt(0))) {
+                    // The first character may be a digit for end of game results like 1-0 or an "*"
+                    if (!StringUtils.isEmpty(token) && Character.isLetter(token.charAt(0))) {
                         moves.add(token);
                     }
                 }

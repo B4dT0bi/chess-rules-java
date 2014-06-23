@@ -163,17 +163,17 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         // Pre-process pgn input
         String trimmedPgn = pgnMove.trim();
 
-        if (PgnFormats.PGN_CASTLE_K.equalsIgnoreCase(trimmedPgn)) {
-            if (position.getNextPlayerTurn() == ChessSide.WHITE) {
-                path = Castling.CASTLEWHITEK;
-            } else {
-                path = Castling.CASTLEBLACKK;
-            }
-        } else if (PgnFormats.PGN_CASTLE_Q.equalsIgnoreCase(trimmedPgn)) {
+        if (StringUtils.startsWithIgnoreCase(trimmedPgn, PgnFormats.PGN_CASTLE_Q)) {
             if (position.getNextPlayerTurn() == ChessSide.WHITE) {
                 path = Castling.CASTLEWHITEQ;
             } else {
                 path = Castling.CASTLEBLACKQ;
+            }
+        } else if (StringUtils.startsWithIgnoreCase(trimmedPgn, PgnFormats.PGN_CASTLE_K)) {
+            if (position.getNextPlayerTurn() == ChessSide.WHITE) {
+                path = Castling.CASTLEWHITEK;
+            } else {
+                path = Castling.CASTLEBLACKK;
             }
         } else {
             path = parseStandardMove(trimmedPgn, position);

@@ -1,2 +1,3 @@
 target/
 /nb*xml
+src/test/resources/*.gz
