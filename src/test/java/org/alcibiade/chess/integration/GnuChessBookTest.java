@@ -25,6 +25,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"testContext.xml"})
 public class GnuChessBookTest {
 
+    private static final int GAMES_LIMIT = 1000;
+
     private Logger log = LoggerFactory.getLogger(GnuChessBookTest.class);
     @Autowired
     private ChessRules chessRules;
@@ -43,7 +45,7 @@ public class GnuChessBookTest {
                 gameIndex += 1;
                 PgnGameModel game = bookReader.readGame();
 
-                if (game == null) {
+                if (game == null || gameIndex > GAMES_LIMIT) {
                     break;
                 }
 
