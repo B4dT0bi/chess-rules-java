@@ -1,17 +1,11 @@
 package org.alcibiade.chess.persistence;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,12 +33,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class PgnMarshallerImpl implements PgnMarshaller {
 
-    private static final String DATEFORMAT_PGN = "yyyy.MM.dd";
-    private static final String PATTERN_COMMENTS = "\\{.*?\\}";
-    private static final String PATTERN_HEADER = "\\[(.*) \"(.*)\"\\]";
-    private static final String PATTERN_PGN = "([RNBQKP]?)([a-h]?)([1-8]?)([x-]?)([a-h][1-8])\\+?=?([RNBQ])?([\\+#])?";
-    private static final String PGN_CASTLE_K = "O-O";
-    private static final String PGN_CASTLE_Q = "O-O-O";
     private Logger log = LoggerFactory.getLogger(PgnMarshallerImpl.class);
 
     @Autowired
@@ -62,13 +50,13 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         String checkMark = ChessHelper.isCheck(chessRules, position, move, true) ? "+" : "";
 
         if (move.equals(Castling.CASTLEBLACKK) && ObjectUtils.equals(bk, position.getPiece(e8))) {
-            result = PGN_CASTLE_K + checkMark;
+            result = PgnFormats.PGN_CASTLE_K + checkMark;
         } else if (move.equals(Castling.CASTLEBLACKQ) && ObjectUtils.equals(bk, position.getPiece(e8))) {
-            result = PGN_CASTLE_Q + checkMark;
+            result = PgnFormats.PGN_CASTLE_Q + checkMark;
         } else if (move.equals(Castling.CASTLEWHITEK) && ObjectUtils.equals(wk, position.getPiece(e1))) {
-            result = PGN_CASTLE_K + checkMark;
+            result = PgnFormats.PGN_CASTLE_K + checkMark;
         } else if (move.equals(Castling.CASTLEWHITEQ) && ObjectUtils.equals(wk, position.getPiece(e1))) {
-            result = PGN_CASTLE_Q + checkMark;
+            result = PgnFormats.PGN_CASTLE_Q + checkMark;
         } else {
             result = dumpStandardMove(position, move, checkMark);
         }
@@ -175,13 +163,13 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         // Pre-process pgn input
         String trimmedPgn = pgnMove.trim();
 
-        if (PGN_CASTLE_K.equalsIgnoreCase(trimmedPgn)) {
+        if (PgnFormats.PGN_CASTLE_K.equalsIgnoreCase(trimmedPgn)) {
             if (position.getNextPlayerTurn() == ChessSide.WHITE) {
                 path = Castling.CASTLEWHITEK;
             } else {
                 path = Castling.CASTLEBLACKK;
             }
-        } else if (PGN_CASTLE_Q.equalsIgnoreCase(trimmedPgn)) {
+        } else if (PgnFormats.PGN_CASTLE_Q.equalsIgnoreCase(trimmedPgn)) {
             if (position.getNextPlayerTurn() == ChessSide.WHITE) {
                 path = Castling.CASTLEWHITEQ;
             } else {
@@ -196,7 +184,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
 
     protected ChessMovePath parseStandardMove(String pgnMove, ChessPosition position) throws
             PgnMoveException {
-        Pattern pgnPattern = Pattern.compile(PATTERN_PGN);
+        Pattern pgnPattern = Pattern.compile(PgnFormats.PATTERN_PGN);
         Matcher pgnMatcher = pgnPattern.matcher(pgnMove);
         if (!pgnMatcher.matches()) {
             throw new PgnMoveException(pgnMove, "Does not match PGN syntax");
@@ -273,7 +261,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
     @Override
     public String exportGame(String white, String black, Date startDate, Collection<String> moves) {
         StringBuilder pgn = new StringBuilder();
-        SimpleDateFormat df = new SimpleDateFormat(DATEFORMAT_PGN);
+        SimpleDateFormat df = new SimpleDateFormat(PgnFormats.DATEFORMAT_PGN);
 
         appendPgnHeader(pgn, "White", white);
         appendPgnHeader(pgn, "Black", black);
@@ -307,67 +295,8 @@ public class PgnMarshallerImpl implements PgnMarshaller {
 
     @Override
     public Collection<String> importGame(InputStream pgnStream) throws IOException {
-        Reader reader = new InputStreamReader(pgnStream, "UTF-8");
-        BufferedReader bufferedReader = new BufferedReader(reader);
-
-        String whitePlayerName = "White player";
-        String blackPlayerName = "Black player";
-        Date gameDate = new Date();
-        int emptyLines = 0;
-        List<String> moves = new LinkedList<>();
-
-        String line = bufferedReader.readLine();
-        while (line != null) {
-            String preprocessed = preprocess(line);
-
-            if (preprocessed.isEmpty()) {
-                emptyLines += 1;
-
-                // A second empty line marks the enf of the moves.
-                if (emptyLines == 2) {
-                    break;
-                }
-            }
-
-            // An empty line after the moves marks the end of the moves.
-            if (!moves.isEmpty() && preprocessed.isEmpty()) {
-                break;
-            }
-
-            Pattern header = Pattern.compile(PATTERN_HEADER);
-            Matcher headerMatcher = header.matcher(preprocessed);
-
-            if (headerMatcher.matches()) {
-                String key = headerMatcher.group(1);
-                String val = headerMatcher.group(2);
-                log.debug("" + key + " = " + val);
-
-                if (StringUtils.equalsIgnoreCase("white", key)) {
-                    whitePlayerName = val;
-                } else if (StringUtils.equalsIgnoreCase("black", key)) {
-                    blackPlayerName = val;
-                } else if (StringUtils.equalsIgnoreCase("date", key)) {
-                    SimpleDateFormat df = new SimpleDateFormat(DATEFORMAT_PGN);
-                    try {
-                        gameDate = df.parse(val);
-                    } catch (ParseException e) {
-                        throw new IOException("Invalid date format in pgn header " + e);
-                    }
-                }
-            } else {
-                String[] tokens = preprocessed.split(" +");
-
-                for (String token : tokens) {
-                    if (!StringUtils.isEmpty(token) && !Character.isDigit(token.charAt(0))) {
-                        moves.add(token);
-                    }
-                }
-            }
-
-            line = bufferedReader.readLine();
-        }
-
-        return moves;
+        PgnBookReader bookReader = new PgnBookReader(pgnStream);
+        return bookReader.readGame().getMoves();
     }
 
     private void appendPgnHeader(StringBuilder text, String name, String value) {
@@ -378,15 +307,5 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         text.append(" \"");
         text.append("]");
         text.append("\n");
-    }
-
-    private String preprocess(String line) {
-        String result = line.trim();
-
-        if (!result.startsWith("[")) {
-            result = result.replaceAll(PATTERN_COMMENTS, "");
-        }
-
-        return result;
     }
 }

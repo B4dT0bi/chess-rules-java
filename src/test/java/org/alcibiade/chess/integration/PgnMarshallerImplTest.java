@@ -17,6 +17,7 @@ import org.alcibiade.chess.model.ChessSide;
 import org.alcibiade.chess.model.IllegalMoveException;
 import org.alcibiade.chess.model.PgnMoveException;
 import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
+import org.alcibiade.chess.persistence.PgnBookReader;
 import org.alcibiade.chess.rules.ChessRules;
 import org.alcibiade.chess.persistence.PgnMarshaller;
 import static org.junit.Assert.assertEquals;
@@ -319,20 +320,27 @@ public class PgnMarshallerImplTest {
 
     @Test
     public void testMultiGameLoading() throws IOException, IllegalMoveException, PgnMoveException {
-        Collection<String> moves;
+        try (InputStream gamesStream = this.getClass().getResourceAsStream("empty_game.pgn")) {
+            Collection<String> moves = pgnMarshaller.importGame(gamesStream);
+            assertEquals(0, moves.size());
+        }
 
-        moves = pgnMarshaller.importGame(this.getClass().getResourceAsStream("empty_game.pgn"));
-        assertEquals(0, moves.size());
-        moves = pgnMarshaller.importGame(this.getClass().getResourceAsStream("sample_game.pgn"));
-        assertEquals(85, moves.size());
+        try (InputStream gamesStream = this.getClass().getResourceAsStream("sample_game.pgn")) {
+            Collection<String> moves = pgnMarshaller.importGame(gamesStream);
+            assertEquals(85, moves.size());
+        }
 
         try (InputStream gamesStream = this.getClass().getResourceAsStream("multiple_games.pgn")) {
-            moves = pgnMarshaller.importGame(gamesStream);
+            Collection<String> moves = pgnMarshaller.importGame(gamesStream);
             assertEquals(85, moves.size());
-//        moves = pgnMarshaller.importGame(gamesStream);
-//        assertEquals(4, moves.size());
-//        moves = pgnMarshaller.importGame(gamesStream);
-//        assertEquals(85, moves.size());
+        }
+
+        try (InputStream gamesStream = this.getClass().getResourceAsStream("multiple_games.pgn");
+                PgnBookReader bookReader = new PgnBookReader(gamesStream)) {
+            assertEquals(85, bookReader.readGame().getMoves().size());
+            assertEquals(4, bookReader.readGame().getMoves().size());
+            assertEquals(85, bookReader.readGame().getMoves().size());
+            assertEquals(null, bookReader.readGame());
         }
     }
 }
