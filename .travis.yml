@@ -6,5 +6,6 @@ before_install:
 - sudo apt-get install -y gnuchess phalanx
 - sudo ln -sf /usr/games/gnuchess /usr/bin/gnuchess
 - sudo ln -sf /usr/games/phalanx /usr/bin/phalanx
+- wget -O src/test/resources/book_1.02.pgn.gz http://ftp.gnu.org/gnu/chess/book_1.02.pgn.gz
 after_success:
 - mvn clean test jacoco:report coveralls:report
