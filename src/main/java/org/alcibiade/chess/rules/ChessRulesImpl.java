@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.alcibiade.chess.model.ChessBoardCoord;
 import org.alcibiade.chess.model.ChessBoardModel;
 import org.alcibiade.chess.model.ChessBoardPath;
@@ -61,15 +62,15 @@ public class ChessRulesImpl implements ChessRules {
 
     @Override
     public Set<ChessBoardCoord> getReachableDestinations(ChessPosition position,
-            ChessBoardCoord pieceCoords,
-            boolean excludeCheckSituations) {
+                                                         ChessBoardCoord pieceCoords,
+                                                         boolean excludeCheckSituations) {
         PieceMoveManager moveManager = new PieceMoveManager(position);
         return moveManager.getReachableSquares(pieceCoords, excludeCheckSituations ? this : null);
     }
 
     @Override
     public Set<ChessBoardCoord> getAttackingPieces(ChessPosition position,
-            ChessBoardCoord squarePosition) {
+                                                   ChessBoardCoord squarePosition) {
 
         Set<ChessBoardCoord> result = new HashSet<ChessBoardCoord>();
         ChessSide player = position.getNextPlayerTurn();
@@ -132,7 +133,9 @@ public class ChessRulesImpl implements ChessRules {
         List<ChessBoardUpdate> updates = new ArrayList<ChessBoardUpdate>();
 
         ChessPiece movedPiece = position.getPiece(path.getSource());
-        assert movedPiece != null;
+        if (movedPiece == null) {
+            throw new IllegalMoveException(path.getSource());
+        }
 
         ChessPieceType pieceType = movedPiece.getType();
         ChessSide player = position.getNextPlayerTurn();
@@ -179,8 +182,8 @@ public class ChessRulesImpl implements ChessRules {
     }
 
     private void considerRookImpacts(ChessPosition position, ChessMovePath path,
-            List<ChessBoardUpdate> updates,
-            ChessPieceType pieceType, ChessSide player, ChessPiece targetPiece) {
+                                     List<ChessBoardUpdate> updates,
+                                     ChessPieceType pieceType, ChessSide player, ChessPiece targetPiece) {
         // Rook move impact on castling flags
         if (pieceType == ChessPieceType.ROOK) {
             int row = player == ChessSide.WHITE ? 0 : 7;
@@ -206,8 +209,8 @@ public class ChessRulesImpl implements ChessRules {
     }
 
     private void considerCastlingMoves(ChessPosition position, ChessMovePath path,
-            List<ChessBoardUpdate> updates,
-            ChessPieceType pieceType, ChessSide player) throws IllegalMoveException {
+                                       List<ChessBoardUpdate> updates,
+                                       ChessPieceType pieceType, ChessSide player) throws IllegalMoveException {
         if (pieceType == ChessPieceType.KING) {
             if (path.equals(Castling.CASTLEWHITEQ)) {
                 if (!position.isCastlingAvailable(ChessSide.WHITE, false)) {
@@ -241,8 +244,8 @@ public class ChessRulesImpl implements ChessRules {
     }
 
     private void addCastlingFlagIfRequired(ChessPosition position, List<ChessBoardUpdate> updates,
-            ChessSide side,
-            boolean kingside) {
+                                           ChessSide side,
+                                           boolean kingside) {
         if (position.isCastlingAvailable(side, kingside)) {
             updates.add(new FlagUpdateCastling(side, kingside));
         }

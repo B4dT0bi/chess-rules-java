@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.alcibiade.chess.model.ChessBoardCoord;
 import org.alcibiade.chess.model.ChessBoardModel;
 import org.alcibiade.chess.model.ChessBoardPath;
@@ -23,10 +24,12 @@ import org.alcibiade.chess.rules.ChessRules;
 import org.alcibiade.chess.persistence.PgnMarshaller;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.assertj.core.api.Assertions;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -167,8 +170,8 @@ public class PgnMarshallerImplTest {
         assertFalse(boardModel.isCastlingAvailable(ChessSide.BLACK, false));
         assertNull(boardModel.getLastPawnDMove());
 
-        log.debug("Game status is: " + status);
-        log.debug("End postion is: " + boardModel);
+        log.debug("Game status is: {}", status);
+        log.debug("End postion is: {}", boardModel);
     }
 
     @Test
@@ -236,9 +239,9 @@ public class PgnMarshallerImplTest {
     @Test
     public void testPawnPromotionOnAttack() throws PgnMoveException, IllegalMoveException {
         String[] moves = {
-            "Pe2-e4", "Nf6", "Pe4-e5", "h5", "Pe5xf6",
-            "c5", "Nb1-c3", "Rh6", "Nc3-e4", "e6",
-            "Pf6xg7", "Rh7"
+                "Pe2-e4", "Nf6", "Pe4-e5", "h5", "Pe5xf6",
+                "c5", "Nb1-c3", "Rh6", "Nc3-e4", "e6",
+                "Pf6xg7", "Rh7"
         };
 
         ChessBoardModel model = new ChessBoardModel();
@@ -268,10 +271,10 @@ public class PgnMarshallerImplTest {
     @Test
     public void testCastling() throws PgnMoveException, IllegalMoveException {
         String[] moves = {"e4", "c6", "Nf3", "d5",
-            "d3", "dxe4", "dxe4", "Qxd1+",
-            "Kxd1", "Bg4", "Bc4", "Nd7",
-            "Ke1", "e6", "Ng5", "Ne5",
-            "Bb3"};
+                "d3", "dxe4", "dxe4", "Qxd1+",
+                "Kxd1", "Bg4", "Bc4", "Nd7",
+                "Ke1", "e6", "Ng5", "Ne5",
+                "Bb3"};
 
         ChessBoardModel model = new ChessBoardModel();
         model.setInitialPosition();
@@ -296,8 +299,8 @@ public class PgnMarshallerImplTest {
     @Test
     public void testPromotionInActualCase() throws PgnMoveException, IllegalMoveException {
         String[] moves = {"e4", "c5", "d4", "cxd4", "c3", "Nf6",
-            "b4", "Nc6", "Bh6", "gxh6", "Na3", "dxc3", "Qd2",
-            "cxd2+", "Ke2", "Nxe4", "Kf3", "d5", "Rc1", "Ne5+", "Ke2"};
+                "b4", "Nc6", "Bh6", "gxh6", "Na3", "dxc3", "Qd2",
+                "cxd2+", "Ke2", "Nxe4", "Kf3", "d5", "Rc1", "Ne5+", "Ke2"};
 
         ChessBoardModel model = new ChessBoardModel();
         model.setInitialPosition();
@@ -339,7 +342,7 @@ public class PgnMarshallerImplTest {
         }
 
         try (InputStream gamesStream = this.getClass().getResourceAsStream("multiple_games.pgn");
-                PgnBookReader bookReader = new PgnBookReader(gamesStream)) {
+             PgnBookReader bookReader = new PgnBookReader(gamesStream)) {
             assertEquals(85, bookReader.readGame().getMoves().size());
             assertEquals(4, bookReader.readGame().getMoves().size());
             assertEquals(85, bookReader.readGame().getMoves().size());
@@ -368,5 +371,18 @@ public class PgnMarshallerImplTest {
         Assertions.assertThat(ChessHelper.isCheck(chessRules, position, castleMovePath1, true)).isEqualTo(true);
         Assertions.assertThat(castleMovePath1).isEqualToComparingFieldByField(castleMovePath2);
         Assertions.assertThat(pgnMarshaller.convertMoveToPgn(position, castleMovePath1)).isEqualTo("O-O-O+");
+    }
+
+    @Test(expected = PgnMoveException.class)
+    public void testIllegalPgnMove() throws PgnMoveException {
+        ChessPosition position = chessRules.getInitialPosition();
+        pgnMarshaller.convertPgnToMove(position, "e5");
+    }
+
+    @Test(expected = IllegalMoveException.class)
+    public void testIllegalRawMoveSource() throws IllegalMoveException {
+        ChessPosition position = chessRules.getInitialPosition();
+        ChessMovePath movePath = new ChessMovePath(new ChessBoardCoord(5, 2), new ChessBoardCoord(5, 4));
+        pgnMarshaller.convertMoveToPgn(position, movePath);
     }
 }

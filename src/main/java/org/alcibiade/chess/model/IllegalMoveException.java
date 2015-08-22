@@ -7,10 +7,6 @@ package org.alcibiade.chess.model;
  */
 public class IllegalMoveException extends ChessException {
 
-    public IllegalMoveException(String message) {
-        super(message);
-    }
-
     public IllegalMoveException(ChessBoardCoord coord) {
         super("Illegal move at " + coord);
     }
