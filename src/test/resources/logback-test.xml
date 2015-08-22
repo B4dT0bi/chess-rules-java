@@ -8,9 +8,9 @@
         </encoder>
     </appender>
 
-    <logger name="org.alcibiade.chess.integration" level="DEBUG" />
+    <logger name="org.alcibiade.chess.integration" level="OFF" />
 
-    <root level="INFO">
+    <root level="OFF">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
