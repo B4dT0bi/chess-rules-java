@@ -6,7 +6,7 @@ public enum ChessSide {
     private final String shortName;
     private final String fullName;
 
-    private ChessSide(String shortName, String fullName) {
+    ChessSide(String shortName, String fullName) {
         this.shortName = shortName;
         this.fullName = fullName;
     }

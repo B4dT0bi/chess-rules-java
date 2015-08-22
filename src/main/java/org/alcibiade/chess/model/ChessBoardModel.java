@@ -9,7 +9,7 @@ public class ChessBoardModel implements ChessPosition, Serializable {
     private static final long serialVersionUID = 1;
     // Pieces organized in rows A1..H1, A1..B2, ...
     private ChessPiece[] pieces = new ChessPiece[64];
-    // Castlink flags in the following order: KQkq
+    // Castling flags in the following order: KQkq
     private boolean[] castlingFlags = new boolean[4];
     private ChessBoardCoord lastPawnDMove = null;
     private ChessSide nextPlayerTurn = ChessSide.WHITE;
@@ -34,31 +34,22 @@ public class ChessBoardModel implements ChessPosition, Serializable {
 
     public void setPiece(ChessBoardCoord coord, ChessPiece piece) {
         pieces[coord.getOffset()] = piece;
-        notifyListeners();
     }
 
     public void clearSquare(ChessBoardCoord coord) {
         pieces[coord.getOffset()] = null;
-        notifyListeners();
     }
 
     public void clear() {
         for (int i = 0; i < 64; i++) {
             pieces[i] = null;
         }
-
-        notifyListeners();
     }
 
     public void movePiece(ChessBoardCoord src, ChessBoardCoord dst) {
         assert pieces[src.getOffset()] != null;
         pieces[dst.getOffset()] = pieces[src.getOffset()];
         pieces[src.getOffset()] = null;
-        notifyListeners();
-    }
-
-    protected void notifyListeners() {
-        // This can be overridden to handle notification
     }
 
     public void setInitialPosition() {

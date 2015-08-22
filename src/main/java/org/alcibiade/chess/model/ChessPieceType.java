@@ -7,7 +7,7 @@ public enum ChessPieceType {
     private final String shortName;
     private final String fullName;
 
-    private ChessPieceType(String shortName, String fullName) {
+    ChessPieceType(String shortName, String fullName) {
         this.shortName = shortName;
         this.fullName = fullName;
     }

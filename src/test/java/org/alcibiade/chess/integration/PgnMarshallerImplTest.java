@@ -203,7 +203,8 @@ public class PgnMarshallerImplTest {
 
     @Test
     public void testGameDump() {
-        pgnMarshaller.exportGame("White player", "Black player", new Date(), new ArrayList<String>());
+        String pgnGame = pgnMarshaller.exportGame("White player", "Black player", new Date(), new ArrayList<String>());
+        Assertions.assertThat(pgnGame).contains("White player");
     }
 
     @Test
@@ -377,7 +378,7 @@ public class PgnMarshallerImplTest {
         ChessPosition position = chessRules.getInitialPosition();
         ChessMovePath moveE4 = pgnMarshaller.convertPgnToMove(position, "e4");
 
-        Assertions.assertThat(moveE4.getSource()).isEqualToComparingFieldByField(new ChessBoardCoord(4,1));
+        Assertions.assertThat(moveE4.getSource()).isEqualToComparingFieldByField(new ChessBoardCoord(4, 1));
 
         Assertions.assertThat(moveE4.getSource().getPgnCoordinates()).isEqualTo("e2");
         Assertions.assertThat(moveE4.getDestination().getPgnCoordinates()).isEqualTo("e4");
