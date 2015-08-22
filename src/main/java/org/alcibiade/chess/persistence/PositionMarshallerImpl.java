@@ -1,11 +1,6 @@
 package org.alcibiade.chess.persistence;
 
-import org.alcibiade.chess.model.ChessBoardCoord;
-import org.alcibiade.chess.model.ChessBoardModel;
-import org.alcibiade.chess.model.ChessPiece;
-import org.alcibiade.chess.model.ChessPieceType;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.ChessSide;
+import org.alcibiade.chess.model.*;
 import org.springframework.stereotype.Component;
 
 /**

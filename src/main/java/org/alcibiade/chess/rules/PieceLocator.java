@@ -1,12 +1,13 @@
 package org.alcibiade.chess.rules;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.alcibiade.chess.model.ChessBoardCoord;
 import org.alcibiade.chess.model.ChessPiece;
 import org.alcibiade.chess.model.ChessPosition;
 import org.alcibiade.chess.model.ChessSide;
 import org.apache.commons.lang.ObjectUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class PieceLocator {
 
@@ -17,7 +18,7 @@ public class PieceLocator {
     }
 
     public Set<ChessBoardCoord> locatePiece(ChessPiece piece) {
-        Set<ChessBoardCoord> coords = new HashSet<ChessBoardCoord>();
+        Set<ChessBoardCoord> coords = new HashSet<>();
 
         for (ChessBoardCoord coord : ChessBoardCoord.getAllBoardCoords()) {
             ChessPiece localPiece = position.getPiece(coord);
@@ -30,7 +31,7 @@ public class PieceLocator {
     }
 
     public Set<ChessBoardCoord> locatePieces(ChessSide side) {
-        Set<ChessBoardCoord> coords = new HashSet<ChessBoardCoord>();
+        Set<ChessBoardCoord> coords = new HashSet<>();
 
         for (ChessBoardCoord coord : ChessBoardCoord.getAllBoardCoords()) {
             ChessPiece localPiece = position.getPiece(coord);

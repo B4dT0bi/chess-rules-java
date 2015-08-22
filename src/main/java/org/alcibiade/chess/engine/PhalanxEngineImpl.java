@@ -1,12 +1,8 @@
 package org.alcibiade.chess.engine;
 
-import javax.annotation.PostConstruct;
+import org.alcibiade.chess.engine.process.ExternalProcess;
 import org.alcibiade.chess.engine.process.ExternalProcessFactory;
 import org.alcibiade.chess.persistence.PgnMarshaller;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.regex.Pattern;
-import org.alcibiade.chess.engine.process.ExternalProcess;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.regex.Pattern;
 
 @Component
 @Qualifier("phalanx")
@@ -29,22 +30,17 @@ public class PhalanxEngineImpl implements ChessEngineController {
     private ExternalProcessFactory externalProcessFactory;
     @Autowired
     private PgnMarshaller pgnMarshaller;
-    private int phalanxVersion;
 
     @PostConstruct
     public void validateCompatibility() throws IOException {
         try (ExternalProcess process = externalProcessFactory.run(phalanxCommand, "--version")) {
             String version = process.read(Pattern.compile("(.*)"));
 
-            if (StringUtils.endsWith(version, "XXII")) {
-                phalanxVersion = 22;
-            } else if (StringUtils.endsWith(version, "XXII-pg")) {
-                phalanxVersion = 22;
+            if (StringUtils.endsWith(version, "XXII") || StringUtils.endsWith(version, "XXII-pg")) {
+                log.info("Detected Phalanx Chess engine: " + version);
             } else {
                 throw new IllegalStateException("Provided phalanx not supported: " + version);
             }
-
-            log.info("Detected Phalanx Chess engine: " + version);
         }
     }
 

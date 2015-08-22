@@ -1,25 +1,12 @@
 package org.alcibiade.chess.integration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 import org.alcibiade.chess.engine.ChessEngineController;
 import org.alcibiade.chess.engine.ChessEngineFailureException;
-import org.alcibiade.chess.model.ChessBoardModel;
-import org.alcibiade.chess.model.ChessException;
-import org.alcibiade.chess.model.ChessGameStatus;
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessSide;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.PgnMoveException;
+import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
-import org.alcibiade.chess.rules.ChessRules;
 import org.alcibiade.chess.persistence.PgnMarshaller;
+import org.alcibiade.chess.rules.ChessRules;
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -28,6 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"testContext.xml"})

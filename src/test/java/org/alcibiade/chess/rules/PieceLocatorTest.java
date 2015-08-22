@@ -1,12 +1,9 @@
 package org.alcibiade.chess.rules;
 
-import org.alcibiade.chess.model.ChessBoardCoord;
-import org.alcibiade.chess.model.ChessBoardModel;
-import org.alcibiade.chess.model.ChessPiece;
-import org.alcibiade.chess.model.ChessPieceType;
-import org.alcibiade.chess.model.ChessSide;
-import static org.junit.Assert.assertEquals;
+import org.alcibiade.chess.model.*;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class PieceLocatorTest {
 

@@ -1,7 +1,8 @@
 package org.alcibiade.chess.model;
 
-import java.io.Serializable;
 import org.apache.commons.lang.ObjectUtils;
+
+import java.io.Serializable;
 
 public class ChessBoardModel implements ChessPosition, Serializable {
 

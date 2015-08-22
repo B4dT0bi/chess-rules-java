@@ -1,29 +1,15 @@
 package org.alcibiade.chess.rules;
 
+import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.model.boardupdates.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.alcibiade.chess.model.ChessBoardCoord;
-import org.alcibiade.chess.model.ChessBoardModel;
-import org.alcibiade.chess.model.ChessBoardPath;
-import org.alcibiade.chess.model.ChessGameStatus;
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessPiece;
-import org.alcibiade.chess.model.ChessPieceType;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.ChessSide;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
-import org.alcibiade.chess.model.boardupdates.FlagUpdateCastling;
-import org.alcibiade.chess.model.boardupdates.FlagUpdatePawn;
-import org.alcibiade.chess.model.boardupdates.PieceUpdateAdd;
-import org.alcibiade.chess.model.boardupdates.PieceUpdateMove;
-import org.alcibiade.chess.model.boardupdates.PieceUpdateRemove;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * Chess rules reference implementation.
@@ -72,7 +58,7 @@ public class ChessRulesImpl implements ChessRules {
     public Set<ChessBoardCoord> getAttackingPieces(ChessPosition position,
                                                    ChessBoardCoord squarePosition) {
 
-        Set<ChessBoardCoord> result = new HashSet<ChessBoardCoord>();
+        Set<ChessBoardCoord> result = new HashSet<>();
         ChessSide player = position.getNextPlayerTurn();
         ChessSide opponent = player.opposite();
 
@@ -130,7 +116,7 @@ public class ChessRulesImpl implements ChessRules {
     @Override
     public List<ChessBoardUpdate> getUpdatesForMove(ChessPosition position, ChessMovePath path)
             throws IllegalMoveException {
-        List<ChessBoardUpdate> updates = new ArrayList<ChessBoardUpdate>();
+        List<ChessBoardUpdate> updates = new ArrayList<>();
 
         ChessPiece movedPiece = position.getPiece(path.getSource());
         if (movedPiece == null) {

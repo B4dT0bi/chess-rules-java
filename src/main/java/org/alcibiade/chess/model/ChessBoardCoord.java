@@ -98,7 +98,7 @@ public class ChessBoardCoord implements Comparable<ChessBoardCoord>, Serializabl
     }
 
     public static SortedSet<ChessBoardCoord> getAllBoardCoords() {
-        SortedSet<ChessBoardCoord> items = new TreeSet<ChessBoardCoord>();
+        SortedSet<ChessBoardCoord> items = new TreeSet<>();
 
         for (int i = 0; i < 64; i++) {
             items.add(new ChessBoardCoord(i));

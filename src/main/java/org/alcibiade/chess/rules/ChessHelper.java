@@ -1,15 +1,10 @@
 package org.alcibiade.chess.rules;
 
+import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
+
 import java.util.Collection;
 import java.util.Set;
-import org.alcibiade.chess.model.ChessBoardCoord;
-import org.alcibiade.chess.model.ChessBoardModel;
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessPiece;
-import org.alcibiade.chess.model.ChessPieceType;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
 
 public class ChessHelper {
 

@@ -1,18 +1,19 @@
 package org.alcibiade.chess.engine;
 
-import javax.annotation.PostConstruct;
 import org.alcibiade.chess.engine.process.ExternalProcess;
 import org.alcibiade.chess.engine.process.ExternalProcessFactory;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.regex.Pattern;
 
 @Component
 @Qualifier("gnuchess")
@@ -22,7 +23,6 @@ public class GnuChessEngineImpl implements ChessEngineController {
     private Logger log = LoggerFactory.getLogger(GnuChessEngineImpl.class);
     @Value("${gnuchess.command:gnuchess}")
     private String gnuchessCommand;
-    private int gnuChessVersion;
     @Autowired
     private ExternalProcessFactory externalProcessFactory;
 
@@ -31,15 +31,11 @@ public class GnuChessEngineImpl implements ChessEngineController {
         try (ExternalProcess process = externalProcessFactory.run(gnuchessCommand, "--version")) {
             String version = process.read(Pattern.compile("(.*)"));
 
-            if (StringUtils.startsWith(version, "GNU Chess 5.")) {
-                gnuChessVersion = 5;
-            } else if (StringUtils.startsWith(version, "GNU Chess 6.")) {
-                gnuChessVersion = 6;
+            if (StringUtils.startsWith(version, "GNU Chess 5.") || StringUtils.startsWith(version, "GNU Chess 6.")) {
+                log.info("Detected GnuChess engine: " + version);
             } else {
                 throw new IllegalStateException("Provided gnuchess not supported: " + version);
             }
-
-            log.info("Detected GnuChess engine: " + version);
         }
     }
 

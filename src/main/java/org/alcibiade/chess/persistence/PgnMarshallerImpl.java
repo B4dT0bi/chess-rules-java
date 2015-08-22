@@ -1,5 +1,14 @@
 package org.alcibiade.chess.persistence;
 
+import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.rules.*;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -9,26 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.alcibiade.chess.model.ChessBoardCoord;
-import org.alcibiade.chess.model.ChessBoardPath;
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessPiece;
-import org.alcibiade.chess.model.ChessPieceType;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.ChessSide;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.PgnMoveException;
-import org.alcibiade.chess.rules.Castling;
-import org.alcibiade.chess.rules.ChessHelper;
-import org.alcibiade.chess.rules.ChessRules;
-import org.alcibiade.chess.rules.PieceLocator;
-import org.alcibiade.chess.rules.PieceMoveManager;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class PgnMarshallerImpl implements PgnMarshaller {

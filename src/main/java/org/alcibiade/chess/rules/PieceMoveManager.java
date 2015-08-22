@@ -1,11 +1,12 @@
 package org.alcibiade.chess.rules;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.alcibiade.chess.model.ChessBoardCoord;
 import org.alcibiade.chess.model.ChessPiece;
 import org.alcibiade.chess.model.ChessPosition;
 import org.alcibiade.chess.model.ChessSide;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class PieceMoveManager {
 
@@ -17,7 +18,7 @@ public class PieceMoveManager {
 
     // SUPPRESS CHECKSTYLE NPath
     public Set<ChessBoardCoord> getReachableSquares(ChessBoardCoord coord, ChessRules rules) {
-        Set<ChessBoardCoord> reachable = new HashSet<ChessBoardCoord>();
+        Set<ChessBoardCoord> reachable = new HashSet<>();
         ChessPiece piece = position.getPiece(coord);
 
         if (piece != null) {
@@ -182,7 +183,7 @@ public class PieceMoveManager {
 
     private Set<ChessBoardCoord> isOpponentOrFreeRecursive(ChessSide player, ChessBoardCoord coord,
             int dx, int dy) {
-        Set<ChessBoardCoord> result = new HashSet<ChessBoardCoord>();
+        Set<ChessBoardCoord> result = new HashSet<>();
         ChessBoardCoord targetCoord = isFree(coord, dx, dy);
 
         if (targetCoord == null) {

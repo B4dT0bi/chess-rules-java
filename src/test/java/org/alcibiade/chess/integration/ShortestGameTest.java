@@ -1,13 +1,9 @@
 package org.alcibiade.chess.integration;
 
-import org.alcibiade.chess.model.ChessGameStatus;
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.PgnMoveException;
+import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.persistence.PgnMarshaller;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.alcibiade.chess.rules.ChessRules;
-import org.alcibiade.chess.persistence.PgnMarshaller;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;

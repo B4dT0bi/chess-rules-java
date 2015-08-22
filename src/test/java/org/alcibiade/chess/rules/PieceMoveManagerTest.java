@@ -1,14 +1,12 @@
 package org.alcibiade.chess.rules;
 
+import org.alcibiade.chess.model.*;
+import org.junit.Test;
+
 import java.util.Set;
-import org.alcibiade.chess.model.ChessBoardCoord;
-import org.alcibiade.chess.model.ChessBoardModel;
-import org.alcibiade.chess.model.ChessPiece;
-import org.alcibiade.chess.model.ChessPieceType;
-import org.alcibiade.chess.model.ChessSide;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 
 public class PieceMoveManagerTest {
 

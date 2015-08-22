@@ -1,8 +1,9 @@
 package org.alcibiade.chess.engine.process;
 
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 /**
  * Create native processes.
