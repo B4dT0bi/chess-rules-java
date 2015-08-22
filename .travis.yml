@@ -4,5 +4,7 @@ jdk:
 before_install:
 - sudo apt-get update -qq
 - sudo apt-get install -y gnuchess phalanx
+- sudo ln -sf /usr/games/gnuchess /usr/bin/gnuchess
+- sudo ln -sf /usr/games/phalanx /usr/bin/phalanx
 after_success:
 - mvn clean test jacoco:report coveralls:report
