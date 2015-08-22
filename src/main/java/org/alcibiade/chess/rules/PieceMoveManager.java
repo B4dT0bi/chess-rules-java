@@ -72,8 +72,7 @@ public class PieceMoveManager {
                     add(reachable, isOpponentOrFree(player, coord, -1, -1));
 
                     if (position.isCastlingAvailable(player, true)) {
-                        boolean positionOk = true;
-                        positionOk = positionOk && position.getPiece(new ChessBoardCoord(5, baseRow))
+                        boolean positionOk = position.getPiece(new ChessBoardCoord(5, baseRow))
                                 == null;
                         positionOk = positionOk && position.getPiece(new ChessBoardCoord(6, baseRow))
                                 == null;
@@ -81,13 +80,13 @@ public class PieceMoveManager {
                         if (rules != null) {
                             positionOk = positionOk
                                     && rules.getAttackingPieces(position, new ChessBoardCoord(4,
-                                                    baseRow)).isEmpty();
+                                    baseRow)).isEmpty();
                             positionOk = positionOk
                                     && rules.getAttackingPieces(position, new ChessBoardCoord(5,
-                                                    baseRow)).isEmpty();
+                                    baseRow)).isEmpty();
                             positionOk = positionOk
                                     && rules.getAttackingPieces(position, new ChessBoardCoord(6,
-                                                    baseRow)).isEmpty();
+                                    baseRow)).isEmpty();
                         }
 
                         if (positionOk) {
@@ -98,8 +97,7 @@ public class PieceMoveManager {
                     }
 
                     if (position.isCastlingAvailable(player, false)) {
-                        boolean positionOk = true;
-                        positionOk = positionOk && position.getPiece(new ChessBoardCoord(1, baseRow))
+                        boolean positionOk = position.getPiece(new ChessBoardCoord(1, baseRow))
                                 == null;
                         positionOk = positionOk && position.getPiece(new ChessBoardCoord(2, baseRow))
                                 == null;
@@ -109,16 +107,16 @@ public class PieceMoveManager {
                         if (rules != null) {
                             positionOk = positionOk
                                     && rules.getAttackingPieces(position, new ChessBoardCoord(1,
-                                                    baseRow)).isEmpty();
+                                    baseRow)).isEmpty();
                             positionOk = positionOk
                                     && rules.getAttackingPieces(position, new ChessBoardCoord(2,
-                                                    baseRow)).isEmpty();
+                                    baseRow)).isEmpty();
                             positionOk = positionOk
                                     && rules.getAttackingPieces(position, new ChessBoardCoord(3,
-                                                    baseRow)).isEmpty();
+                                    baseRow)).isEmpty();
                             positionOk = positionOk
                                     && rules.getAttackingPieces(position, new ChessBoardCoord(4,
-                                                    baseRow)).isEmpty();
+                                    baseRow)).isEmpty();
                         }
 
                         if (positionOk) {
@@ -182,7 +180,7 @@ public class PieceMoveManager {
     }
 
     private Set<ChessBoardCoord> isOpponentOrFreeRecursive(ChessSide player, ChessBoardCoord coord,
-            int dx, int dy) {
+                                                           int dx, int dy) {
         Set<ChessBoardCoord> result = new HashSet<>();
         ChessBoardCoord targetCoord = isFree(coord, dx, dy);
 

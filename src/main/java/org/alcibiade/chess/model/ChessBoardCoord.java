@@ -8,13 +8,11 @@ import java.util.TreeSet;
 
 public class ChessBoardCoord implements Comparable<ChessBoardCoord>, Serializable {
 
-    private static final String[] COLNAMES = { "a", "b", "c", "d", "e", "f", "g", "h" };
+    private static final String[] COLNAMES = {"a", "b", "c", "d", "e", "f", "g", "h"};
     private static final long serialVersionUID = 1;
     private int offset;
 
-    @SuppressWarnings("unused")
-    private ChessBoardCoord() {
-        // Serialization requires this constructor
+    public ChessBoardCoord() {
     }
 
     public ChessBoardCoord(String pgnCoord) {
@@ -39,17 +37,9 @@ public class ChessBoardCoord implements Comparable<ChessBoardCoord>, Serializabl
     }
 
     public ChessBoardCoord(int offset) {
-        this(offset, false);
-    }
-
-    public ChessBoardCoord(int offset, boolean inverted) {
         assert offset >= 0;
         assert offset < 64;
-        if (inverted) {
-            this.offset = 63 - offset;
-        } else {
-            this.offset = offset;
-        }
+        this.offset = offset;
     }
 
     public static int getRowFromName(String rowName) {
@@ -69,12 +59,6 @@ public class ChessBoardCoord implements Comparable<ChessBoardCoord>, Serializabl
 
     public int getOffset() {
         return offset;
-    }
-
-    public int getOffset(boolean inverted) {
-        int result;
-        result = handleInversion(offset, inverted);
-        return result;
     }
 
     public int getRow() {
@@ -127,16 +111,6 @@ public class ChessBoardCoord implements Comparable<ChessBoardCoord>, Serializabl
     @Override
     public String toString() {
         return "BoardCoord{" + getPgnCoordinates() + ", offs=" + offset + "}";
-    }
-
-    private static int handleInversion(int offset, boolean inverted) {
-        int result;
-        if (inverted) {
-            result = offset;
-        } else {
-            result = 63 - offset;
-        }
-        return result;
     }
 
     @Override
