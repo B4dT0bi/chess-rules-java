@@ -382,7 +382,20 @@ public class PgnMarshallerImplTest {
     @Test(expected = IllegalMoveException.class)
     public void testIllegalRawMoveSource() throws IllegalMoveException {
         ChessPosition position = chessRules.getInitialPosition();
-        ChessMovePath movePath = new ChessMovePath(new ChessBoardCoord(5, 2), new ChessBoardCoord(5, 4));
+        ChessMovePath movePath = new ChessMovePath(new ChessBoardCoord(4, 2), new ChessBoardCoord(4, 4));
         pgnMarshaller.convertMoveToPgn(position, movePath);
+    }
+
+    @Test
+    public void testBidirectionalTransform() throws IllegalMoveException, PgnMoveException {
+        ChessPosition position = chessRules.getInitialPosition();
+        ChessMovePath moveE4 = pgnMarshaller.convertPgnToMove(position, "e4");
+
+        Assertions.assertThat(moveE4.getSource()).isEqualToComparingFieldByField(new ChessBoardCoord(4,1));
+
+        Assertions.assertThat(moveE4.getSource().getPgnCoordinates()).isEqualTo("e2");
+        Assertions.assertThat(moveE4.getDestination().getPgnCoordinates()).isEqualTo("e4");
+        String pgn = pgnMarshaller.convertMoveToPgn(position, moveE4);
+        Assertions.assertThat(pgn).isEqualTo("e4");
     }
 }
