@@ -9,6 +9,8 @@ import org.alcibiade.chess.persistence.PgnGameModel;
 import org.alcibiade.chess.persistence.PgnMarshaller;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.alcibiade.chess.rules.ChessRules;
+import org.assertj.core.api.Assertions;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ public class GnuChessBookTest {
     private Resource pgnBook;
 
     @Test
+    @Ignore
     public void testBookGames() throws IOException, PgnMoveException, IllegalMoveException {
         log.debug("Book length is {} kbytes", pgnBook.contentLength() / 1024);
         try (PgnBookReader bookReader = new PgnBookReader(new GZIPInputStream(pgnBook.getInputStream()))) {
@@ -60,6 +63,16 @@ public class GnuChessBookTest {
                     position = ChessHelper.applyMoveAndSwitch(chessRules, position, move);
                 }
             }
+        }
+    }
+
+    @Test
+    public void testGameModel() throws IOException, PgnMoveException, IllegalMoveException {
+        try (PgnBookReader bookReader = new PgnBookReader(new GZIPInputStream(pgnBook.getInputStream()))) {
+            PgnGameModel firstGame = bookReader.readGame();
+            Assertions.assertThat(firstGame.getWhitePlayerName()).isEqualTo("Barden, Leonard W");
+            Assertions.assertThat(firstGame.getBlackPlayerName()).isEqualTo("Adams, Michael");
+            Assertions.assertThat(firstGame.getGameDate()).isWithinYear(1951);
         }
     }
 }

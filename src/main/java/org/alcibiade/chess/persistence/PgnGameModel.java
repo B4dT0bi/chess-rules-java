@@ -27,6 +27,18 @@ public class PgnGameModel {
         return Collections.unmodifiableList(moves);
     }
 
+    public String getWhitePlayerName() {
+        return whitePlayerName;
+    }
+
+    public String getBlackPlayerName() {
+        return blackPlayerName;
+    }
+
+    public Date getGameDate() {
+        return gameDate;
+    }
+
     @Override
     public String toString() {
         return String.format("%s vs. %s (%d moves)", whitePlayerName, blackPlayerName, moves.size());
