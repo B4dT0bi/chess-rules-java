@@ -10,7 +10,6 @@ import org.alcibiade.chess.persistence.PgnMarshaller;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.alcibiade.chess.rules.ChessRules;
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,8 +38,12 @@ public class GnuChessBookTest {
     private Resource pgnBook;
 
     @Test
-    @Ignore
     public void testBookGames() throws IOException, PgnMoveException, IllegalMoveException {
+        if (!pgnBook.exists()) {
+            log.warn("Pgn book is not found.");
+            return;
+        }
+
         log.debug("Book length is {} kbytes", pgnBook.contentLength() / 1024);
         try (PgnBookReader bookReader = new PgnBookReader(new GZIPInputStream(pgnBook.getInputStream()))) {
             int gameIndex = 0;
@@ -68,6 +71,11 @@ public class GnuChessBookTest {
 
     @Test
     public void testGameModel() throws IOException, PgnMoveException, IllegalMoveException {
+        if (!pgnBook.exists()) {
+            log.warn("Pgn book is not found.");
+            return;
+        }
+
         try (PgnBookReader bookReader = new PgnBookReader(new GZIPInputStream(pgnBook.getInputStream()))) {
             PgnGameModel firstGame = bookReader.readGame();
             Assertions.assertThat(firstGame.getWhitePlayerName()).isEqualTo("Barden, Leonard W");
