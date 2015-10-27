@@ -39,6 +39,7 @@ public class PgnBookReader implements Closeable {
     public PgnGameModel readGame() throws IOException {
         String whitePlayerName = "White player";
         String blackPlayerName = "Black player";
+        String result = "*";
         Date gameDate = new Date();
         int emptyLines = 0;
         int readLines = 0;
@@ -82,6 +83,8 @@ public class PgnBookReader implements Closeable {
                     } catch (ParseException e) {
                         throw new IOException("Invalid date format in pgn header " + e);
                     }
+                } else if (StringUtils.equalsIgnoreCase("result", key)) {
+                    result = val;
                 }
             } else {
                 // Remove move numbers from the contents.                
@@ -98,7 +101,7 @@ public class PgnBookReader implements Closeable {
             line = bookReader.readLine();
         }
 
-        return readLines == 0 ? null : new PgnGameModel(whitePlayerName, blackPlayerName, gameDate, moves);
+        return readLines == 0 ? null : new PgnGameModel(whitePlayerName, blackPlayerName, gameDate, result, moves);
     }
 
     private String preprocess(String line) {

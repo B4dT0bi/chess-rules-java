@@ -14,13 +14,15 @@ public class PgnGameModel {
     private String whitePlayerName;
     private String blackPlayerName;
     private Date gameDate;
+    private String result;
     private List<String> moves;
 
-    public PgnGameModel(String whitePlayerName, String blackPlayerName, Date gameDate, List<String> moves) {
+    public PgnGameModel(String whitePlayerName, String blackPlayerName, Date gameDate, String result, List<String> moves) {
         this.whitePlayerName = whitePlayerName;
         this.blackPlayerName = blackPlayerName;
         this.gameDate = gameDate;
         this.moves = moves;
+        this.result = result;
     }
 
     public List<String> getMoves() {
@@ -39,9 +41,13 @@ public class PgnGameModel {
         return gameDate;
     }
 
+    public String getResult() {
+        return result;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s vs. %s (%d moves)", whitePlayerName, blackPlayerName, moves.size());
+        return String.format("%s vs. %s (%d moves, result: %s)", whitePlayerName, blackPlayerName, moves.size(), result);
     }
 
 }

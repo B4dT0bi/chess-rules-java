@@ -1,9 +1,6 @@
 package org.alcibiade.chess.integration;
 
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.PgnMoveException;
+import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.persistence.PgnBookReader;
 import org.alcibiade.chess.persistence.PgnGameModel;
 import org.alcibiade.chess.persistence.PgnMarshaller;
@@ -65,6 +62,8 @@ public class GnuChessBookTest {
                     ChessMovePath move = pgnMarshaller.convertPgnToMove(position, pgnMove);
                     position = ChessHelper.applyMoveAndSwitch(chessRules, position, move);
                 }
+
+                Assertions.assertThat(game.getResult()).isIn("0-1", "1-0", "1/2-1/2", "*");
             }
         }
     }
