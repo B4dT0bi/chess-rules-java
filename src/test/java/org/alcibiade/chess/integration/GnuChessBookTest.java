@@ -7,6 +7,7 @@ import org.alcibiade.chess.persistence.PgnMarshaller;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.alcibiade.chess.rules.ChessRules;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -64,6 +65,13 @@ public class GnuChessBookTest {
                 }
 
                 Assertions.assertThat(game.getResult()).isIn("0-1", "1-0", "1/2-1/2", "*");
+                Assertions.assertThat(game.getRound()).is(new Condition<String>() {
+                    @Override
+                    public boolean matches(String s) {
+                        return s == null || Integer.valueOf(s) > 0;
+                    }
+                });
+
             }
         }
     }
@@ -80,6 +88,10 @@ public class GnuChessBookTest {
             Assertions.assertThat(firstGame.getWhitePlayerName()).isEqualTo("Barden, Leonard W");
             Assertions.assertThat(firstGame.getBlackPlayerName()).isEqualTo("Adams, Michael");
             Assertions.assertThat(firstGame.getGameDate()).isWithinYear(1951);
+            Assertions.assertThat(firstGame.getResult()).isEqualTo("1-0");
+            Assertions.assertThat(firstGame.getRound()).isEqualTo(null);
+            Assertions.assertThat(firstGame.getSite()).isEqualTo("Hastings");
+            Assertions.assertThat(firstGame.getEvent()).isEqualTo(null);
         }
     }
 }

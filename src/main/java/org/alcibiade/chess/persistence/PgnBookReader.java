@@ -40,6 +40,9 @@ public class PgnBookReader implements Closeable {
         String whitePlayerName = "White player";
         String blackPlayerName = "Black player";
         String result = "*";
+        String event = null;
+        String site = null;
+        String round = null;
         Date gameDate = new Date();
         int emptyLines = 0;
         int readLines = 0;
@@ -72,7 +75,10 @@ public class PgnBookReader implements Closeable {
                 String val = headerMatcher.group(2);
                 log.debug("" + key + " = " + val);
 
-                if (StringUtils.equalsIgnoreCase("white", key)) {
+                //noinspection StatementWithEmptyBody
+                if ("?".equals(val)) {
+                    // Ignore this field
+                } else if (StringUtils.equalsIgnoreCase("white", key)) {
                     whitePlayerName = val;
                 } else if (StringUtils.equalsIgnoreCase("black", key)) {
                     blackPlayerName = val;
@@ -85,6 +91,12 @@ public class PgnBookReader implements Closeable {
                     }
                 } else if (StringUtils.equalsIgnoreCase("result", key)) {
                     result = val;
+                } else if (StringUtils.equalsIgnoreCase("site", key)) {
+                    site = val;
+                } else if (StringUtils.equalsIgnoreCase("event", key)) {
+                    event = val;
+                } else if (StringUtils.equalsIgnoreCase("round", key)) {
+                    round = val;
                 }
             } else {
                 // Remove move numbers from the contents.                
@@ -101,7 +113,10 @@ public class PgnBookReader implements Closeable {
             line = bookReader.readLine();
         }
 
-        return readLines == 0 ? null : new PgnGameModel(whitePlayerName, blackPlayerName, gameDate, result, moves);
+        return readLines == 0 ? null : new PgnGameModel(
+                whitePlayerName, blackPlayerName, gameDate, result,
+                event, site, round,
+                moves);
     }
 
     private String preprocess(String line) {

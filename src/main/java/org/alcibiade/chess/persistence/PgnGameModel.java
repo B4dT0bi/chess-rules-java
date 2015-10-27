@@ -15,14 +15,25 @@ public class PgnGameModel {
     private String blackPlayerName;
     private Date gameDate;
     private String result;
+
+    private String event;
+    private String site;
+    private String round;
+
     private List<String> moves;
 
-    public PgnGameModel(String whitePlayerName, String blackPlayerName, Date gameDate, String result, List<String> moves) {
+    public PgnGameModel(
+            String whitePlayerName, String blackPlayerName, Date gameDate, String result,
+            String event, String site, String round,
+            List<String> moves) {
         this.whitePlayerName = whitePlayerName;
         this.blackPlayerName = blackPlayerName;
         this.gameDate = gameDate;
         this.moves = moves;
         this.result = result;
+        this.event = event;
+        this.site = site;
+        this.round = round;
     }
 
     public List<String> getMoves() {
@@ -43,6 +54,18 @@ public class PgnGameModel {
 
     public String getResult() {
         return result;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public String getSite() {
+        return site;
+    }
+
+    public String getRound() {
+        return round;
     }
 
     @Override
