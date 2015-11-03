@@ -15,6 +15,8 @@ public class PositionMarshallerImpl implements PositionMarshaller {
     public String convertPositionToString(ChessPosition position) {
         StringBuilder text = new StringBuilder();
 
+        text.append(position.getNextPlayerTurn().getShortName());
+
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 ChessBoardCoord coord = new ChessBoardCoord(x, y);
@@ -39,7 +41,7 @@ public class PositionMarshallerImpl implements PositionMarshaller {
         text.append(position.isCastlingAvailable(ChessSide.BLACK, false) ? "q" : "-");
 
         ChessBoardCoord lastPawnDMove = position.getLastPawnDMove();
-        text.append(lastPawnDMove == null ? "-" : lastPawnDMove.getPgnCoordinates());
+        text.append(lastPawnDMove == null ? "-" : lastPawnDMove.getPgnCoordinates().substring(0, 1));
 
         return text.toString();
     }
@@ -48,9 +50,11 @@ public class PositionMarshallerImpl implements PositionMarshaller {
     public ChessPosition convertStringToPosition(String text) {
         ChessBoardModel boardModel = new ChessBoardModel();
 
+        boardModel.setNextPlayerTurn(ChessSide.valueOfShortName(text.substring(0, 1)));
+
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                Character pieceChar = text.charAt(x + y * 8);
+                Character pieceChar = text.charAt(1 + x + y * 8);
 
                 if (pieceChar != '-') {
                     ChessBoardCoord coord = new ChessBoardCoord(x, y);
@@ -61,14 +65,25 @@ public class PositionMarshallerImpl implements PositionMarshaller {
             }
         }
 
-        boardModel.setCastlingAvailable(ChessSide.WHITE, true, text.charAt(64) != '-');
-        boardModel.setCastlingAvailable(ChessSide.WHITE, false, text.charAt(65) != '-');
-        boardModel.setCastlingAvailable(ChessSide.BLACK, true, text.charAt(66) != '-');
-        boardModel.setCastlingAvailable(ChessSide.BLACK, false, text.charAt(67) != '-');
+        boardModel.setCastlingAvailable(ChessSide.WHITE, true, text.charAt(65) != '-');
+        boardModel.setCastlingAvailable(ChessSide.WHITE, false, text.charAt(66) != '-');
+        boardModel.setCastlingAvailable(ChessSide.BLACK, true, text.charAt(67) != '-');
+        boardModel.setCastlingAvailable(ChessSide.BLACK, false, text.charAt(68) != '-');
 
-        String dmove = text.substring(68);
-        if (dmove.length() > 1) {
-            ChessBoardCoord dmoveCoord = new ChessBoardCoord(dmove);
+        char dmove = text.charAt(69);
+        if (dmove != '-') {
+            String coord = null;
+
+            switch (boardModel.getNextPlayerTurn()) {
+                case BLACK:
+                    coord = "" + dmove + "4";
+                    break;
+                case WHITE:
+                    coord = "" + dmove + "5";
+                    break;
+            }
+
+            ChessBoardCoord dmoveCoord = new ChessBoardCoord(coord);
             boardModel.setLastPawnDMove(dmoveCoord);
         }
 

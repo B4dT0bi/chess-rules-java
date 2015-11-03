@@ -22,4 +22,17 @@ public enum ChessSide {
     public ChessSide opposite() {
         return this == WHITE ? BLACK : WHITE;
     }
+
+    public static ChessSide valueOfShortName(String name) {
+        ChessSide result = null;
+
+        for (ChessSide side : values()) {
+            if (side.getShortName().equals(name)) {
+                result = side;
+                break;
+            }
+        }
+
+        return result;
+    }
 }

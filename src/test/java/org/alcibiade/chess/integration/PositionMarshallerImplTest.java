@@ -37,27 +37,29 @@ public class PositionMarshallerImplTest {
         ChessPosition position = chessRules.getInitialPosition();
 
         Assertions.assertThat(positionMarshaller.convertPositionToString(position))
-                .isEqualTo("RNBQKBNRPPPPPPPP--------------------------------pppppppprnbqkbnrKQkq-");
+                .isEqualTo("wRNBQKBNRPPPPPPPP--------------------------------pppppppprnbqkbnrKQkq-");
         Assertions.assertThat(positionMarshaller.convertStringToPosition(
-                "RNBQKBNRPPPPPPPP--------------------------------pppppppprnbqkbnrKQkq-"))
-                .isEqualTo(position);
+                "wRNBQKBNRPPPPPPPP--------------------------------pppppppprnbqkbnrKQkq-"))
+                .isEqualToComparingFieldByField(position);
 
         position = ChessHelper.applyMoveAndSwitch(chessRules, position,
                 pgnMarshaller.convertPgnToMove(position, "e4"));
 
         Assertions.assertThat(positionMarshaller.convertPositionToString(position))
-                .isEqualTo("RNBQKBNRPPPP-PPP------------P-------------------pppppppprnbqkbnrKQkqe4");
+                .isEqualTo("bRNBQKBNRPPPP-PPP------------P-------------------pppppppprnbqkbnrKQkqe");
+        Assertions.assertThat(positionMarshaller.convertStringToPosition("bRNBQKBNRPPPP-PPP------------P-------------------pppppppprnbqkbnrKQkqe"))
+                .isEqualToComparingFieldByField(position);
 
         position = ChessHelper.applyMoveAndSwitch(chessRules, position,
                 pgnMarshaller.convertPgnToMove(position, "Nf6"));
 
         Assertions.assertThat(positionMarshaller.convertPositionToString(position))
-                .isEqualTo("RNBQKBNRPPPP-PPP------------P----------------n--pppppppprnbqkb-rKQkq-");
+                .isEqualTo("wRNBQKBNRPPPP-PPP------------P----------------n--pppppppprnbqkb-rKQkq-");
 
         position = ChessHelper.applyMoveAndSwitch(chessRules, position,
                 pgnMarshaller.convertPgnToMove(position, "Ke2"));
 
         Assertions.assertThat(positionMarshaller.convertPositionToString(position))
-                .isEqualTo("RNBQ-BNRPPPPKPPP------------P----------------n--pppppppprnbqkb-r--kq-");
+                .isEqualTo("bRNBQ-BNRPPPPKPPP------------P----------------n--pppppppprnbqkb-r--kq-");
     }
 }
