@@ -27,6 +27,13 @@ public class PgnMarshallerImpl implements PgnMarshaller {
     @Autowired
     private ChessRules chessRules;
 
+    public PgnMarshallerImpl() {
+    }
+
+    public PgnMarshallerImpl(ChessRules chessRules) {
+        this.chessRules = chessRules;
+    }
+
     @Override
     public String convertMoveToPgn(ChessPosition position, ChessMovePath move) throws
             IllegalMoveException {
