@@ -5,7 +5,7 @@ package org.alcibiade.chess.model;
  *
  * @author Yannick Kirschhoffer <alcibiade@alcibiade.org>
  */
-public abstract class ChessException extends Exception {
+public abstract class ChessException extends RuntimeException {
 
     public ChessException(String message) {
         super(message);

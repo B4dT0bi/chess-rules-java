@@ -2,16 +2,11 @@ package org.alcibiade.chess.persistence;
 
 import org.alcibiade.chess.model.ChessMovePath;
 import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.PgnMoveException;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.alcibiade.chess.rules.ChessRules;
 import org.alcibiade.chess.rules.ChessRulesImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Marshalling tests.
@@ -19,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class PositionMarshallerTest {
 
     @Test
-    public void testTransformation() throws PgnMoveException, IllegalMoveException {
+    public void testTransformation() {
         ChessRules rules = new ChessRulesImpl();
         PgnMarshaller pgnMarshaller = new PgnMarshallerImpl(rules);
         PositionMarshallerImpl positionMarshaller = new PositionMarshallerImpl();
