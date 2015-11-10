@@ -37,6 +37,7 @@ public class PgnBookReader implements Closeable {
     }
 
     public PgnGameModel readGame() throws IOException {
+        Pattern header = Pattern.compile(PgnFormats.PATTERN_HEADER);
         String whitePlayerName = "White player";
         String blackPlayerName = "Black player";
         String result = "*";
@@ -44,7 +45,6 @@ public class PgnBookReader implements Closeable {
         String site = null;
         String round = null;
         Date gameDate = new Date();
-        int emptyLines = 0;
         int readLines = 0;
         List<String> moves = new LinkedList<>();
 
@@ -53,21 +53,11 @@ public class PgnBookReader implements Closeable {
             readLines += 1;
             String preprocessed = preprocess(line);
 
-            if (preprocessed.isEmpty()) {
-                emptyLines += 1;
-
-                // A second empty line marks the enf of the moves.
-                if (emptyLines == 2) {
-                    break;
-                }
-            }
-
             // An empty line after the moves marks the end of the moves.
             if (!moves.isEmpty() && preprocessed.isEmpty()) {
                 break;
             }
 
-            Pattern header = Pattern.compile(PgnFormats.PATTERN_HEADER);
             Matcher headerMatcher = header.matcher(preprocessed);
 
             if (headerMatcher.matches()) {
@@ -113,7 +103,7 @@ public class PgnBookReader implements Closeable {
             line = bookReader.readLine();
         }
 
-        return readLines == 0 ? null : new PgnGameModel(
+        return moves.isEmpty() ? null : new PgnGameModel(
                 whitePlayerName, blackPlayerName, gameDate, result,
                 event, site, round,
                 moves);

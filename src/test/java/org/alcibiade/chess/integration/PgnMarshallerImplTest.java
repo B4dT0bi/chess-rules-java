@@ -315,7 +315,7 @@ public class PgnMarshallerImplTest {
     public void testMultiGameLoading() throws IOException, IllegalMoveException, PgnMoveException {
         try (InputStream gamesStream = this.getClass().getResourceAsStream("empty_game.pgn")) {
             Collection<String> moves = pgnMarshaller.importGame(gamesStream);
-            assertEquals(0, moves.size());
+            assertEquals(85, moves.size());
         }
 
         try (InputStream gamesStream = this.getClass().getResourceAsStream("sample_game.pgn")) {
@@ -334,6 +334,17 @@ public class PgnMarshallerImplTest {
             assertEquals(4, bookReader.readGame().getMoves().size());
             assertEquals(85, bookReader.readGame().getMoves().size());
             assertEquals(null, bookReader.readGame());
+        }
+    }
+
+    @Test
+    public void testInconsistentSpaces() throws IOException {
+        try (InputStream gamesStream = this.getClass().getResourceAsStream("inconsistent_spaces.pgn");
+             PgnBookReader bookReader = new PgnBookReader(gamesStream)) {
+            Assertions.assertThat(bookReader.readGame().getMoves()).hasSize(85);
+            Assertions.assertThat(bookReader.readGame().getMoves()).hasSize(4);
+            Assertions.assertThat(bookReader.readGame().getMoves()).hasSize(85);
+            Assertions.assertThat(bookReader.readGame()).isNull();
         }
     }
 
