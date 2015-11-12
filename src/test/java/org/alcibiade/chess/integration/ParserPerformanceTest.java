@@ -25,25 +25,37 @@ public class ParserPerformanceTest {
 
     private Logger logger = LoggerFactory.getLogger(ParserPerformanceTest.class);
 
+    public static void main(String... args) throws IOException {
+        new ParserPerformanceTest().testParsingPerformance();
+    }
+
     @Test
     public void testParsingPerformance() throws IOException {
-        InputStream stream = this.getClass().getResourceAsStream("McDonnell.pgn");
-        PgnBookReader bookReader = new PgnBookReader(stream);
 
         ChessRules rules = new ChessRulesImpl();
         PgnMarshaller pgnMarshaller = new PgnMarshallerImpl(rules);
 
-        PgnGameModel gameModel;
+        long ts = System.currentTimeMillis();
 
-        while ((gameModel = bookReader.readGame()) != null) {
-            logger.debug("Parsing game {}", gameModel);
+        for (int i = 0; i < 5; i++) {
+            PgnGameModel gameModel;
+            InputStream stream = this.getClass().getResourceAsStream("McDonnell.pgn");
+            PgnBookReader bookReader = new PgnBookReader(stream);
 
-            ChessPosition position = rules.getInitialPosition();
+            while ((gameModel = bookReader.readGame()) != null) {
+                logger.debug("Parsing game {}", gameModel);
 
-            for (String movePgn : gameModel.getMoves()) {
-                ChessMovePath move = pgnMarshaller.convertPgnToMove(position, movePgn);
-                position = ChessHelper.applyMoveAndSwitch(rules, position, move);
+                ChessPosition position = rules.getInitialPosition();
+
+                for (String movePgn : gameModel.getMoves()) {
+                    ChessMovePath move = pgnMarshaller.convertPgnToMove(position, movePgn);
+                    position = ChessHelper.applyMoveAndSwitch(rules, position, move);
+                }
             }
         }
+
+        long te = System.currentTimeMillis();
+
+        logger.debug(String.format("Duration: %.3f", (te - ts) / 1000.));
     }
 }

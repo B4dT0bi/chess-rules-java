@@ -5,6 +5,7 @@ import org.alcibiade.chess.model.ChessPiece;
 import org.alcibiade.chess.model.ChessPosition;
 import org.alcibiade.chess.model.ChessSide;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -179,22 +180,24 @@ public class PieceMoveManager {
         return result;
     }
 
-    private Set<ChessBoardCoord> isOpponentOrFreeRecursive(ChessSide player, ChessBoardCoord coord,
-                                                           int dx, int dy) {
+    private Set<ChessBoardCoord> isOpponentOrFreeRecursive(ChessSide player, ChessBoardCoord coord, int dx, int dy) {
         Set<ChessBoardCoord> result = new HashSet<>();
+        isOpponentOrFreeRecursive(result, player, coord, dx, dy);
+        return result;
+    }
+
+    private void isOpponentOrFreeRecursive(Set<ChessBoardCoord> result, ChessSide player, ChessBoardCoord coord, int dx, int dy) {
         ChessBoardCoord targetCoord = isFree(coord, dx, dy);
 
         if (targetCoord == null) {
             targetCoord = isOpponent(player, coord, dx, dy);
         } else {
-            result.addAll(isOpponentOrFreeRecursive(player, targetCoord, dx, dy));
+            isOpponentOrFreeRecursive(result, player, targetCoord, dx, dy);
         }
 
         if (targetCoord != null) {
             result.add(targetCoord);
         }
-
-        return result;
     }
 
     private ChessBoardCoord isOpponent(ChessSide player, ChessBoardCoord coord, int dx, int dy) {
@@ -222,7 +225,7 @@ public class PieceMoveManager {
         return result;
     }
 
-    private boolean add(Set<ChessBoardCoord> reachable, Set<ChessBoardCoord> coords) {
+    private boolean add(Set<ChessBoardCoord> reachable, Collection<ChessBoardCoord> coords) {
         boolean result = false;
 
         if (coords != null) {

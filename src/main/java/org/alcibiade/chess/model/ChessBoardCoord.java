@@ -1,15 +1,24 @@
 package org.alcibiade.chess.model;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class ChessBoardCoord implements Comparable<ChessBoardCoord>, Serializable {
 
     private static final String[] COLNAMES = {"a", "b", "c", "d", "e", "f", "g", "h"};
     private static final long serialVersionUID = 1;
+    private static SortedSet<ChessBoardCoord> boardCoords = null;
+
+    static {
+        SortedSet<ChessBoardCoord> coords = new TreeSet<>();
+
+        for (int i = 0; i < 64; i++) {
+            coords.add(new ChessBoardCoord(i));
+        }
+
+        ChessBoardCoord.boardCoords = Collections.unmodifiableSortedSet(coords);
+    }
+
     private int offset;
 
     public ChessBoardCoord() {
@@ -82,13 +91,7 @@ public class ChessBoardCoord implements Comparable<ChessBoardCoord>, Serializabl
     }
 
     public static SortedSet<ChessBoardCoord> getAllBoardCoords() {
-        SortedSet<ChessBoardCoord> items = new TreeSet<>();
-
-        for (int i = 0; i < 64; i++) {
-            items.add(new ChessBoardCoord(i));
-        }
-
-        return items;
+        return boardCoords;
     }
 
     @Override

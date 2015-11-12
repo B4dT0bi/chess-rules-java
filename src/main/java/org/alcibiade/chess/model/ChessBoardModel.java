@@ -15,14 +15,22 @@ public class ChessBoardModel implements ChessPosition, Serializable {
     private ChessSide nextPlayerTurn = ChessSide.WHITE;
 
     public void setPosition(ChessPosition position) {
-        for (ChessBoardCoord coord : ChessBoardCoord.getAllBoardCoords()) {
-            setPiece(coord, position.getPiece(coord));
+
+        if (position instanceof ChessBoardModel) {
+            ChessBoardModel otherModel = (ChessBoardModel) position;
+            System.arraycopy(otherModel.pieces, 0, this.pieces, 0, 64);
+            System.arraycopy(otherModel.castlingFlags, 0, this.castlingFlags, 0, 4);
+        } else {
+            for (ChessBoardCoord coord : ChessBoardCoord.getAllBoardCoords()) {
+                setPiece(coord, position.getPiece(coord));
+            }
+
+            castlingFlags[0] = position.isCastlingAvailable(ChessSide.WHITE, true);
+            castlingFlags[1] = position.isCastlingAvailable(ChessSide.WHITE, false);
+            castlingFlags[2] = position.isCastlingAvailable(ChessSide.BLACK, true);
+            castlingFlags[3] = position.isCastlingAvailable(ChessSide.BLACK, false);
         }
 
-        castlingFlags[0] = position.isCastlingAvailable(ChessSide.WHITE, true);
-        castlingFlags[1] = position.isCastlingAvailable(ChessSide.WHITE, false);
-        castlingFlags[2] = position.isCastlingAvailable(ChessSide.BLACK, true);
-        castlingFlags[3] = position.isCastlingAvailable(ChessSide.BLACK, false);
         nextPlayerTurn = position.getNextPlayerTurn();
         lastPawnDMove = position.getLastPawnDMove();
     }
@@ -149,16 +157,11 @@ public class ChessBoardModel implements ChessPosition, Serializable {
         int result = 0;
 
         // We don't hash castling flags, only the pieces positions
-
         for (int i = 0; i < 64; i++) {
             result += ObjectUtils.hashCode(pieces[i]);
         }
 
         return result;
-    }
-
-    public void setNextPlayerTurn(ChessSide nextPlayerTurn) {
-        this.nextPlayerTurn = nextPlayerTurn;
     }
 
     public void nextPlayerTurn() {
@@ -168,6 +171,10 @@ public class ChessBoardModel implements ChessPosition, Serializable {
     @Override
     public ChessSide getNextPlayerTurn() {
         return this.nextPlayerTurn;
+    }
+
+    public void setNextPlayerTurn(ChessSide nextPlayerTurn) {
+        this.nextPlayerTurn = nextPlayerTurn;
     }
 
     @Override
