@@ -5,9 +5,10 @@ import org.alcibiade.chess.model.ChessPiece;
 import org.alcibiade.chess.model.ChessPosition;
 import org.alcibiade.chess.model.ChessSide;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class PieceMoveManager {
 
@@ -19,7 +20,7 @@ public class PieceMoveManager {
 
     // SUPPRESS CHECKSTYLE NPath
     public Set<ChessBoardCoord> getReachableSquares(ChessBoardCoord coord, ChessRules rules) {
-        Set<ChessBoardCoord> reachable = new HashSet<>();
+        Set<ChessBoardCoord> reachable = new TreeSet<>();
         ChessPiece piece = position.getPiece(coord);
 
         if (piece != null) {
@@ -180,13 +181,13 @@ public class PieceMoveManager {
         return result;
     }
 
-    private Set<ChessBoardCoord> isOpponentOrFreeRecursive(ChessSide player, ChessBoardCoord coord, int dx, int dy) {
-        Set<ChessBoardCoord> result = new HashSet<>();
+    private Collection<ChessBoardCoord> isOpponentOrFreeRecursive(ChessSide player, ChessBoardCoord coord, int dx, int dy) {
+        Collection<ChessBoardCoord> result = new ArrayList<>();
         isOpponentOrFreeRecursive(result, player, coord, dx, dy);
         return result;
     }
 
-    private void isOpponentOrFreeRecursive(Set<ChessBoardCoord> result, ChessSide player, ChessBoardCoord coord, int dx, int dy) {
+    private void isOpponentOrFreeRecursive(Collection<ChessBoardCoord> result, ChessSide player, ChessBoardCoord coord, int dx, int dy) {
         ChessBoardCoord targetCoord = isFree(coord, dx, dy);
 
         if (targetCoord == null) {

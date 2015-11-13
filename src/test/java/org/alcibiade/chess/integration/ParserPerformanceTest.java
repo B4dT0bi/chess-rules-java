@@ -37,13 +37,22 @@ public class ParserPerformanceTest {
 
         long ts = System.currentTimeMillis();
 
-        for (int i = 0; i < 5; i++) {
+        // Duration depending on Collection used in PieceMoveManager for 10 iterations:
+        // Reference duration with release 1.3.1: 48.9s
+        // Reachable: HashSet - isOpponentOrFree accumulator:
+        //   LinkedList - 16.1s
+        //   ArrayList  - 15.3s
+        //   TreeSet    - 17.2s
+        //   HashSet    - 21.6s
+        // Reachable: TreeSet - isOpponentOrFree accumulator: ArrayList - 14.3s
+
+        for (int i = 0; i < 10; i++) {
             PgnGameModel gameModel;
             InputStream stream = this.getClass().getResourceAsStream("McDonnell.pgn");
             PgnBookReader bookReader = new PgnBookReader(stream);
 
             while ((gameModel = bookReader.readGame()) != null) {
-                logger.debug("Parsing game {}", gameModel);
+                logger.trace("Parsing game {}", gameModel);
 
                 ChessPosition position = rules.getInitialPosition();
 
@@ -56,6 +65,6 @@ public class ParserPerformanceTest {
 
         long te = System.currentTimeMillis();
 
-        logger.debug(String.format("Duration: %.3f", (te - ts) / 1000.));
+        logger.debug(String.format("Duration: %.3fs", (te - ts) / 1000.));
     }
 }
