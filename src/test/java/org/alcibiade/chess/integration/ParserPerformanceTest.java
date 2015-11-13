@@ -39,12 +39,15 @@ public class ParserPerformanceTest {
 
         // Duration depending on Collection used in PieceMoveManager for 10 iterations:
         // Reference duration with release 1.3.1: 48.9s
+        //
         // Reachable: HashSet - isOpponentOrFree accumulator:
         //   LinkedList - 16.1s
         //   ArrayList  - 15.3s
         //   TreeSet    - 17.2s
         //   HashSet    - 21.6s
-        // Reachable: TreeSet - isOpponentOrFree accumulator: ArrayList - 14.3s
+        // Reachable: TreeSet - isOpponentOrFree accumulator: ArrayList - 14.3s !
+        //
+        // Updated the piece locator to iterate over arrays: 12.8s
 
         for (int i = 0; i < 10; i++) {
             PgnGameModel gameModel;
