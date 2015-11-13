@@ -19,7 +19,7 @@ public class ChessHelper {
      * @param move the move to check
      * @param swapSides if true check if the move would lead to a check in favor of the player moving, if false for the
      * opponent.
-     * @return
+     * @return true if the position is a check situation
      * @throws IllegalMoveException
      */
     public static boolean isCheck(ChessRules rules, ChessPosition position, ChessMovePath move, boolean swapSides)
@@ -34,7 +34,7 @@ public class ChessHelper {
         PieceLocator locator = new PieceLocator(nextPosition);
         ChessPiece king = new ChessPiece(ChessPieceType.KING, nextPosition.getNextPlayerTurn());
 
-        Set<ChessBoardCoord> kingPositions = locator.locatePiece(king);
+        Collection<ChessBoardCoord> kingPositions = locator.locatePiece(king);
         if (!kingPositions.isEmpty()) {
             ChessBoardCoord kingCoords = kingPositions.iterator().next();
             Set<ChessBoardCoord> attackers = rules.getAttackingPieces(nextPosition, kingCoords);

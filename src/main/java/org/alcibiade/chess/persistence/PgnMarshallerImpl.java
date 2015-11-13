@@ -92,7 +92,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         boolean otherPieceCanReach = false;
         ChessBoardCoord source = move.getSource();
 
-        Set<ChessBoardCoord> samePieces = pieceLocator.locatePiece(pieceSrc);
+        Collection<ChessBoardCoord> samePieces = pieceLocator.locatePiece(pieceSrc);
         samePieces.remove(move.getSource());
         for (ChessBoardCoord samePiece : samePieces) {
             Set<ChessBoardCoord> reachable = moveManager.getReachableSquares(samePiece, chessRules);

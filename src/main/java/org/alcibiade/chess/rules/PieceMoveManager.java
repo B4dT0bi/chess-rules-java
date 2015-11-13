@@ -30,134 +30,147 @@ public class PieceMoveManager {
 
             switch (piece.getType()) {
                 case PAWN:
-                    // Front move
-                    boolean frontIsFree = add(reachable, isFree(coord, 0, dy));
-
-                    // Double move if in origin row
-                    if (frontIsFree && coord.getRow() == baseRow + dy) {
-                        add(reachable, isFree(coord, 0, dy * 2));
-                    }
-
-                    // Sideways attack
-                    add(reachable, isOpponent(player, coord, 1, dy));
-                    add(reachable, isOpponent(player, coord, -1, dy));
-
-                    // En passant
-                    ChessBoardCoord lastPawn = position.getLastPawnDMove();
-                    if (lastPawn != null) {
-                        int dx = lastPawn.getCol() - coord.getCol();
-                        if (lastPawn.getRow() == coord.getRow() && Math.abs(dx) == 1) {
-                            add(reachable, isFree(coord, dx, dy));
-                        }
-                    }
+                    handlePawnMove(reachable, coord, dy, baseRow, player);
                     break;
 
                 case KNIGHT:
-                    add(reachable, isOpponentOrFree(player, coord, +1, +2));
-                    add(reachable, isOpponentOrFree(player, coord, -1, +2));
-                    add(reachable, isOpponentOrFree(player, coord, -1, -2));
-                    add(reachable, isOpponentOrFree(player, coord, +1, -2));
-                    add(reachable, isOpponentOrFree(player, coord, +2, +1));
-                    add(reachable, isOpponentOrFree(player, coord, -2, +1));
-                    add(reachable, isOpponentOrFree(player, coord, -2, -1));
-                    add(reachable, isOpponentOrFree(player, coord, +2, -1));
+                    handleKnightMove(reachable, player, coord);
                     break;
 
                 case KING:
-                    add(reachable, isOpponentOrFree(player, coord, +1, +1));
-                    add(reachable, isOpponentOrFree(player, coord, +0, +1));
-                    add(reachable, isOpponentOrFree(player, coord, -1, +1));
-                    add(reachable, isOpponentOrFree(player, coord, +1, +0));
-                    add(reachable, isOpponentOrFree(player, coord, -1, +0));
-                    add(reachable, isOpponentOrFree(player, coord, +1, -1));
-                    add(reachable, isOpponentOrFree(player, coord, +0, -1));
-                    add(reachable, isOpponentOrFree(player, coord, -1, -1));
-
-                    if (position.isCastlingAvailable(player, true)) {
-                        boolean positionOk = position.getPiece(new ChessBoardCoord(5, baseRow))
-                                == null;
-                        positionOk = positionOk && position.getPiece(new ChessBoardCoord(6, baseRow))
-                                == null;
-
-                        if (rules != null) {
-                            positionOk = positionOk
-                                    && rules.getAttackingPieces(position, new ChessBoardCoord(4,
-                                    baseRow)).isEmpty();
-                            positionOk = positionOk
-                                    && rules.getAttackingPieces(position, new ChessBoardCoord(5,
-                                    baseRow)).isEmpty();
-                            positionOk = positionOk
-                                    && rules.getAttackingPieces(position, new ChessBoardCoord(6,
-                                    baseRow)).isEmpty();
-                        }
-
-                        if (positionOk) {
-                            add(reachable, player == ChessSide.WHITE ? Castling.CASTLEWHITEK.
-                                    getDestination()
-                                    : Castling.CASTLEBLACKK.getDestination());
-                        }
-                    }
-
-                    if (position.isCastlingAvailable(player, false)) {
-                        boolean positionOk = position.getPiece(new ChessBoardCoord(1, baseRow))
-                                == null;
-                        positionOk = positionOk && position.getPiece(new ChessBoardCoord(2, baseRow))
-                                == null;
-                        positionOk = positionOk && position.getPiece(new ChessBoardCoord(3, baseRow))
-                                == null;
-
-                        if (rules != null) {
-                            positionOk = positionOk
-                                    && rules.getAttackingPieces(position, new ChessBoardCoord(1,
-                                    baseRow)).isEmpty();
-                            positionOk = positionOk
-                                    && rules.getAttackingPieces(position, new ChessBoardCoord(2,
-                                    baseRow)).isEmpty();
-                            positionOk = positionOk
-                                    && rules.getAttackingPieces(position, new ChessBoardCoord(3,
-                                    baseRow)).isEmpty();
-                            positionOk = positionOk
-                                    && rules.getAttackingPieces(position, new ChessBoardCoord(4,
-                                    baseRow)).isEmpty();
-                        }
-
-                        if (positionOk) {
-                            add(reachable, player == ChessSide.WHITE ? Castling.CASTLEWHITEQ.
-                                    getDestination()
-                                    : Castling.CASTLEBLACKQ.getDestination());
-                        }
-                    }
-
+                    handleKingMove(reachable, player, coord, baseRow, rules);
                     break;
 
                 case ROOK:
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, +1, 0));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, -1, 0));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, 0, +1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, 0, -1));
+                    handleRookMove(reachable, player, coord);
                     break;
 
                 case BISHOP:
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, +1, +1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, -1, +1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, +1, -1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, -1, -1));
+                    handleBishopMove(reachable, player, coord);
                     break;
 
                 case QUEEN:
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, +1, 0));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, -1, 0));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, 0, +1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, 0, -1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, +1, +1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, -1, +1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, +1, -1));
-                    add(reachable, isOpponentOrFreeRecursive(player, coord, -1, -1));
+                    handleRookMove(reachable, player, coord);
+                    handleBishopMove(reachable, player, coord);
                     break;
             }
         }
 
         return reachable;
+    }
+
+    private void handleBishopMove(Set<ChessBoardCoord> reachable, ChessSide player, ChessBoardCoord coord) {
+        isOpponentOrFreeRecursive(reachable, player, coord, +1, +1);
+        isOpponentOrFreeRecursive(reachable, player, coord, +1, -1);
+        isOpponentOrFreeRecursive(reachable, player, coord, -1, +1);
+        isOpponentOrFreeRecursive(reachable, player, coord, -1, -1);
+    }
+
+    private void handleRookMove(Set<ChessBoardCoord> reachable, ChessSide player, ChessBoardCoord coord) {
+        isOpponentOrFreeRecursive(reachable, player, coord, +1, 0);
+        isOpponentOrFreeRecursive(reachable, player, coord, -1, 0);
+        isOpponentOrFreeRecursive(reachable, player, coord, 0, +1);
+        isOpponentOrFreeRecursive(reachable, player, coord, 0, -1);
+    }
+
+    private void handleKingMove(Set<ChessBoardCoord> reachable, ChessSide player, ChessBoardCoord coord, int baseRow, ChessRules rules) {
+        add(reachable, isOpponentOrFree(player, coord, +1, +1));
+        add(reachable, isOpponentOrFree(player, coord, +0, +1));
+        add(reachable, isOpponentOrFree(player, coord, -1, +1));
+        add(reachable, isOpponentOrFree(player, coord, +1, +0));
+        add(reachable, isOpponentOrFree(player, coord, -1, +0));
+        add(reachable, isOpponentOrFree(player, coord, +1, -1));
+        add(reachable, isOpponentOrFree(player, coord, +0, -1));
+        add(reachable, isOpponentOrFree(player, coord, -1, -1));
+
+        if (position.isCastlingAvailable(player, true)) {
+            boolean positionOk = position.getPiece(new ChessBoardCoord(5, baseRow))
+                    == null;
+            positionOk = positionOk && position.getPiece(new ChessBoardCoord(6, baseRow))
+                    == null;
+
+            if (rules != null) {
+                positionOk = positionOk
+                        && rules.getAttackingPieces(position, new ChessBoardCoord(4,
+                        baseRow)).isEmpty();
+                positionOk = positionOk
+                        && rules.getAttackingPieces(position, new ChessBoardCoord(5,
+                        baseRow)).isEmpty();
+                positionOk = positionOk
+                        && rules.getAttackingPieces(position, new ChessBoardCoord(6,
+                        baseRow)).isEmpty();
+            }
+
+            if (positionOk) {
+                add(reachable, player == ChessSide.WHITE ? Castling.CASTLEWHITEK.
+                        getDestination()
+                        : Castling.CASTLEBLACKK.getDestination());
+            }
+        }
+
+        if (position.isCastlingAvailable(player, false)) {
+            boolean positionOk = position.getPiece(new ChessBoardCoord(1, baseRow))
+                    == null;
+            positionOk = positionOk && position.getPiece(new ChessBoardCoord(2, baseRow))
+                    == null;
+            positionOk = positionOk && position.getPiece(new ChessBoardCoord(3, baseRow))
+                    == null;
+
+            if (rules != null) {
+                positionOk = positionOk
+                        && rules.getAttackingPieces(position, new ChessBoardCoord(1,
+                        baseRow)).isEmpty();
+                positionOk = positionOk
+                        && rules.getAttackingPieces(position, new ChessBoardCoord(2,
+                        baseRow)).isEmpty();
+                positionOk = positionOk
+                        && rules.getAttackingPieces(position, new ChessBoardCoord(3,
+                        baseRow)).isEmpty();
+                positionOk = positionOk
+                        && rules.getAttackingPieces(position, new ChessBoardCoord(4,
+                        baseRow)).isEmpty();
+            }
+
+            if (positionOk) {
+                add(reachable, player == ChessSide.WHITE ? Castling.CASTLEWHITEQ.
+                        getDestination()
+                        : Castling.CASTLEBLACKQ.getDestination());
+            }
+        }
+    }
+
+    private void handleKnightMove(Set<ChessBoardCoord> reachable, ChessSide player, ChessBoardCoord coord) {
+        add(reachable, isOpponentOrFree(player, coord, +1, +2));
+        add(reachable, isOpponentOrFree(player, coord, -1, +2));
+        add(reachable, isOpponentOrFree(player, coord, -1, -2));
+        add(reachable, isOpponentOrFree(player, coord, +1, -2));
+        add(reachable, isOpponentOrFree(player, coord, +2, +1));
+        add(reachable, isOpponentOrFree(player, coord, -2, +1));
+        add(reachable, isOpponentOrFree(player, coord, -2, -1));
+        add(reachable, isOpponentOrFree(player, coord, +2, -1));
+    }
+
+    private void handlePawnMove(Set<ChessBoardCoord> reachable, ChessBoardCoord coord, int dy, int baseRow, ChessSide player) {
+        // Front move
+        boolean frontIsFree = add(reachable, isFree(coord, 0, dy));
+
+        // Double move if in origin row
+        if (frontIsFree && coord.getRow() == baseRow + dy) {
+            add(reachable, isFree(coord, 0, dy * 2));
+        }
+
+        // Sideways attack
+        add(reachable, isOpponent(player, coord, 1, dy));
+        add(reachable, isOpponent(player, coord, -1, dy));
+
+        // En passant
+        ChessBoardCoord lastPawn = position.getLastPawnDMove();
+        if (lastPawn != null) {
+            int dx = lastPawn.getCol() - coord.getCol();
+            if (lastPawn.getRow() == coord.getRow() && Math.abs(dx) == 1) {
+                add(reachable, isFree(coord, dx, dy));
+            }
+        }
     }
 
     private ChessBoardCoord isFree(ChessBoardCoord coord, int dx, int dy) {

@@ -6,8 +6,9 @@ import org.alcibiade.chess.model.ChessPosition;
 import org.alcibiade.chess.model.ChessSide;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+
 
 /**
  * Optimized piece location helper.
@@ -33,8 +34,8 @@ public class PieceLocator {
      * @return the position of every piece occurrence. May be empty if the
      * piece is no longer present on the board.
      */
-    public Set<ChessBoardCoord> locatePiece(ChessPiece piece) {
-        Set<ChessBoardCoord> coords = new HashSet<>();
+    public Collection<ChessBoardCoord> locatePiece(ChessPiece piece) {
+        Collection<ChessBoardCoord> coords = new ArrayList<>(4);
 
         for (ChessBoardCoord coord : BOARD_COORDINATES) {
             ChessPiece localPiece = position.getPiece(coord);
@@ -53,8 +54,8 @@ public class PieceLocator {
      * @return the position of every piece occurrence. Should never be empty
      * if the game position is valid.
      */
-    public Set<ChessBoardCoord> locatePieces(ChessSide side) {
-        Set<ChessBoardCoord> coords = new HashSet<>();
+    public Collection<ChessBoardCoord> locatePieces(ChessSide side) {
+        Collection<ChessBoardCoord> coords = new ArrayList<>(18);
 
         for (ChessBoardCoord coord : BOARD_COORDINATES) {
             ChessPiece localPiece = position.getPiece(coord);
