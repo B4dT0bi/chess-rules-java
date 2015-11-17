@@ -32,7 +32,7 @@ public class GnuChessEngineImpl implements ChessEngineController {
             String version = process.read(Pattern.compile("(.*)"));
 
             if (StringUtils.startsWith(version, "GNU Chess 5.") || StringUtils.startsWith(version, "GNU Chess 6.")) {
-                log.info("Detected GnuChess engine: " + version);
+                log.info("Detected GnuChess engine: " + version + "\n");
             } else {
                 throw new IllegalStateException("Provided gnuchess not supported: " + version);
             }
@@ -62,7 +62,9 @@ public class GnuChessEngineImpl implements ChessEngineController {
 
         script.append("easy\n");
         script.append("force\n");
-        script.append("depth " + depth + "\n");
+        script.append("depth ");
+        script.append(depth);
+        script.append("\n");
 
         for (String move : moves) {
             script.append(move);
