@@ -26,6 +26,11 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -103,7 +108,7 @@ public class GnuChessBookTest {
     }
 
     @Test
-    public void testImportedGames() throws IOException {
+    public void testImportedGames() throws IOException, InterruptedException {
         Path importFolderPath = Paths.get("import");
 
         if (!Files.exists(importFolderPath)) {
@@ -112,19 +117,39 @@ public class GnuChessBookTest {
 
         DirectoryStream<Path> stream = Files.newDirectoryStream(importFolderPath);
 
+        Set<Path> paths = new TreeSet<>();
+
         for (Path entry : stream) {
-            log.debug("Reading file {}", entry);
-            PgnBookReader bookReader = new PgnBookReader(Files.newInputStream(entry));
-            PgnGameModel game;
-            while ((game = bookReader.readGame()) != null) {
-
-                ChessPosition position = chessRules.getInitialPosition();
-
-                for (String pgnMove : game.getMoves()) {
-                    ChessMovePath move = pgnMarshaller.convertPgnToMove(position, pgnMove);
-                    position = ChessHelper.applyMoveAndSwitch(chessRules, position, move);
-                }
-            }
+            paths.add(entry);
         }
+
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+        for (final Path entry : paths) {
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    log.debug("Reading file {}", entry);
+                    try {
+                        PgnBookReader bookReader = new PgnBookReader(Files.newInputStream(entry));
+                        PgnGameModel game;
+                        while ((game = bookReader.readGame()) != null) {
+
+                            ChessPosition position = chessRules.getInitialPosition();
+
+                            for (String pgnMove : game.getMoves()) {
+                                ChessMovePath move = pgnMarshaller.convertPgnToMove(position, pgnMove);
+                                position = ChessHelper.applyMoveAndSwitch(chessRules, position, move);
+                            }
+                        }
+                    } catch (IOException e) {
+                        log.error("IO error while reading game", e);
+                    }
+                }
+            });
+        }
+
+        executor.shutdown();
+        executor.awaitTermination(10, TimeUnit.DAYS);
     }
 }
