@@ -45,12 +45,11 @@ public class PgnBookReader implements Closeable {
         String site = null;
         String round = null;
         Date gameDate = new Date();
-        int readLines = 0;
         List<String> moves = new LinkedList<>();
+        boolean inComment = false;
 
         String line = bookReader.readLine();
         while (line != null) {
-            readLines += 1;
             String preprocessed = preprocess(line);
 
             // An empty line after the moves marks the end of the moves.
@@ -93,6 +92,19 @@ public class PgnBookReader implements Closeable {
                 String[] tokens = preprocessed.replaceAll("(^| )[0-9]+\\.", " ").split(" +");
 
                 for (String token : tokens) {
+                    if (token.contains("{")) {
+                        inComment = true;
+                    }
+
+                    if (token.contains("}")) {
+                        inComment = false;
+                        continue;
+                    }
+
+                    if (inComment) {
+                        continue;
+                    }
+
                     // The first character may be a digit for end of game results like 1-0 or an "*"
                     if (!StringUtils.isEmpty(token) && Character.isLetter(token.charAt(0))) {
                         moves.add(token);

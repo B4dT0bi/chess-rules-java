@@ -3,6 +3,7 @@ package org.alcibiade.chess.integration;
 import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
 import org.alcibiade.chess.persistence.PgnBookReader;
+import org.alcibiade.chess.persistence.PgnGameModel;
 import org.alcibiade.chess.persistence.PgnMarshaller;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.alcibiade.chess.rules.ChessRules;
@@ -345,6 +346,22 @@ public class PgnMarshallerImplTest {
             Assertions.assertThat(bookReader.readGame().getMoves()).hasSize(4);
             Assertions.assertThat(bookReader.readGame().getMoves()).hasSize(85);
             Assertions.assertThat(bookReader.readGame()).isNull();
+        }
+    }
+
+    @Test
+    public void testComments() throws IOException {
+        InputStream gamesStream = this.getClass().getResourceAsStream("comments.pgn");
+        PgnBookReader bookReader = new PgnBookReader(gamesStream);
+        PgnGameModel firstGame = bookReader.readGame();
+        Assertions.assertThat(firstGame.getMoves()).doesNotContain("check").hasSize(54);
+        Assertions.assertThat(bookReader.readGame()).isNull();
+
+        ChessPosition position = chessRules.getInitialPosition();
+
+        for (String pgn : firstGame.getMoves()) {
+            ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, pgn);
+            position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
         }
     }
 
