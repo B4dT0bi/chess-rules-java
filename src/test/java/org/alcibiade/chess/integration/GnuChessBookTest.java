@@ -1,6 +1,9 @@
 package org.alcibiade.chess.integration;
 
-import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.model.ChessMovePath;
+import org.alcibiade.chess.model.ChessPosition;
+import org.alcibiade.chess.model.IllegalMoveException;
+import org.alcibiade.chess.model.PgnMoveException;
 import org.alcibiade.chess.persistence.PgnBookReader;
 import org.alcibiade.chess.persistence.PgnGameModel;
 import org.alcibiade.chess.persistence.PgnMarshaller;
@@ -19,6 +22,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.GZIPInputStream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -92,6 +99,32 @@ public class GnuChessBookTest {
             Assertions.assertThat(firstGame.getRound()).isEqualTo(null);
             Assertions.assertThat(firstGame.getSite()).isEqualTo("Hastings");
             Assertions.assertThat(firstGame.getEvent()).isEqualTo(null);
+        }
+    }
+
+    @Test
+    public void testImportedGames() throws IOException {
+        Path importFolderPath = Paths.get("import");
+
+        if (!Files.exists(importFolderPath)) {
+            return;
+        }
+
+        DirectoryStream<Path> stream = Files.newDirectoryStream(importFolderPath);
+
+        for (Path entry : stream) {
+            log.debug("Reading file {}", entry);
+            PgnBookReader bookReader = new PgnBookReader(Files.newInputStream(entry));
+            PgnGameModel game;
+            while ((game = bookReader.readGame()) != null) {
+
+                ChessPosition position = chessRules.getInitialPosition();
+
+                for (String pgnMove : game.getMoves()) {
+                    ChessMovePath move = pgnMarshaller.convertPgnToMove(position, pgnMove);
+                    position = ChessHelper.applyMoveAndSwitch(chessRules, position, move);
+                }
+            }
         }
     }
 }
