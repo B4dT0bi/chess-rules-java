@@ -1,9 +1,6 @@
 package org.alcibiade.chess.integration;
 
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.PgnMoveException;
+import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.persistence.PgnBookReader;
 import org.alcibiade.chess.persistence.PgnGameModel;
 import org.alcibiade.chess.persistence.PgnMarshaller;
@@ -120,7 +117,10 @@ public class GnuChessBookTest {
         Set<Path> paths = new TreeSet<>();
 
         for (Path entry : stream) {
-            paths.add(entry);
+            Path fileName = entry.getFileName();
+            if (fileName.toString().endsWith(".pgn")) {
+                paths.add(entry);
+            }
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -134,6 +134,8 @@ public class GnuChessBookTest {
                         PgnBookReader bookReader = new PgnBookReader(Files.newInputStream(entry));
                         PgnGameModel game;
                         while ((game = bookReader.readGame()) != null) {
+                            log.debug("   - {}", game);
+                            log.debug("       Moves: {}", game.getMoves());
 
                             ChessPosition position = chessRules.getInitialPosition();
 
@@ -142,8 +144,13 @@ public class GnuChessBookTest {
                                 position = ChessHelper.applyMoveAndSwitch(chessRules, position, move);
                             }
                         }
+
+                        // Optionally delete the file to leave only files with issues
+                        // Files.delete(entry);
                     } catch (IOException e) {
                         log.error("IO error while reading game", e);
+                    } catch (ChessException e) {
+                        log.debug("Chess rules failure", e);
                     }
                 }
             });
