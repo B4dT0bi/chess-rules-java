@@ -413,4 +413,32 @@ public class PgnMarshallerImplTest {
         String pgn = pgnMarshaller.convertMoveToPgn(position, moveE4);
         Assertions.assertThat(pgn).isEqualTo("e4");
     }
+
+    @Test
+    public void testCheckSuffix() throws IllegalMoveException, PgnMoveException {
+        ChessPosition position = chessRules.getInitialPosition();
+        String[] moves = {"d4", "c5", "e4", "Qa5+"};
+
+        for (String moveText : moves) {
+            ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, moveText);
+            String moveTextFromPath = pgnMarshaller.convertMoveToPgn(position, movePath);
+            Assertions.assertThat(moveTextFromPath).isEqualTo(moveText);
+            position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
+        }
+
+    }
+
+    @Test
+    public void testCheckMateSuffix() throws IllegalMoveException, PgnMoveException {
+        ChessPosition position = chessRules.getInitialPosition();
+        String[] moves = {"g4", "e5", "f4", "Qh4#"};
+
+        for (String moveText : moves) {
+            ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, moveText);
+            String moveTextFromPath = pgnMarshaller.convertMoveToPgn(position, movePath);
+            Assertions.assertThat(moveTextFromPath).isEqualTo(moveText);
+            position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
+        }
+
+    }
 }

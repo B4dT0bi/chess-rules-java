@@ -14,11 +14,11 @@ public class ChessHelper {
     /**
      * Check if a move would lead to a Check situation.
      *
-     * @param rules the chess rules component
-     * @param position the initial position
-     * @param move the move to check
+     * @param rules     the chess rules component
+     * @param position  the initial position
+     * @param move      the move to check
      * @param swapSides if true check if the move would lead to a check in favor of the player moving, if false for the
-     * opponent.
+     *                  opponent.
      * @return true if the position is a check situation
      * @throws IllegalMoveException
      */
@@ -45,6 +45,20 @@ public class ChessHelper {
         return check;
     }
 
+    /**
+     * Check if a move would lead to a Checkmate situation.
+     *
+     * @param rules    the chess rules component
+     * @param position the initial position
+     * @param move     the move to check
+     * @return true if the position is a check situation
+     * @throws IllegalMoveException
+     */
+    public static boolean isCheckMate(ChessRules rules, ChessPosition position, ChessMovePath move) {
+        ChessPosition targetPosition = applyMoveAndSwitch(rules, position, move);
+        return rules.getAvailableMoves(targetPosition).isEmpty();
+    }
+
     public static ChessBoardModel applyMove(ChessRules rules, ChessPosition position, ChessMovePath move)
             throws IllegalMoveException {
         ChessBoardModel nextPosition = new ChessBoardModel();
@@ -58,6 +72,15 @@ public class ChessHelper {
         return nextPosition;
     }
 
+    /**
+     * Convenient method to apply a move on a position.
+     *
+     * @param rules    the chess rules component
+     * @param position the initial position
+     * @param move     the move to apply
+     * @return the board position after the move has been played
+     * @throws IllegalMoveException
+     */
     public static ChessBoardModel applyMoveAndSwitch(
             ChessRules rules, ChessPosition position, ChessMovePath move)
             throws IllegalMoveException {

@@ -37,13 +37,21 @@ public class PgnMarshallerImpl implements PgnMarshaller {
     @Override
     public String convertMoveToPgn(ChessPosition position, ChessMovePath move) throws
             IllegalMoveException {
-        String result = null;
+        String result;
         ChessPiece wk = new ChessPiece(ChessPieceType.KING, ChessSide.WHITE);
         ChessPiece bk = new ChessPiece(ChessPieceType.KING, ChessSide.BLACK);
         ChessBoardCoord e8 = new ChessBoardCoord("e8");
         ChessBoardCoord e1 = new ChessBoardCoord("e1");
 
-        String checkMark = ChessHelper.isCheck(chessRules, position, move, true) ? "+" : "";
+        String checkMark = "";
+
+        if (ChessHelper.isCheck(chessRules, position, move, true)) {
+            if (ChessHelper.isCheckMate(chessRules, position, move)) {
+                checkMark = "#";
+            } else {
+                checkMark = "+";
+            }
+        }
 
         if (move.equals(Castling.CASTLEBLACKK) && ObjectUtils.equals(bk, position.getPiece(e8))) {
             result = PgnFormats.PGN_CASTLE_K + checkMark;
@@ -154,7 +162,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
     @Override
     public ChessMovePath convertPgnToMove(ChessPosition position, String pgnMove) throws
             PgnMoveException {
-        ChessMovePath path = null;
+        ChessMovePath path;
 
         // Pre-process pgn input
         String trimmedPgn = pgnMove.trim();
