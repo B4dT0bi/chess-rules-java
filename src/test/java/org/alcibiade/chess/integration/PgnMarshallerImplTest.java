@@ -441,4 +441,19 @@ public class PgnMarshallerImplTest {
         }
 
     }
+    
+    @Test
+    public void testIssue21() throws IllegalMoveException, PgnMoveException {
+        ChessPosition position = chessRules.getInitialPosition();
+        String[] moves = {"e4", "Nc6", "Nc3", "Nf6", "Nf3", "d5", "d4", "Nxe4", "Nxe4", 
+                "dxe4", "Bh6", "gxh6", "Ba6", "exf3", "Qd3", "fxg2", "Qxh7", "gxh1+=Q", "Ke2"};
+        
+        for ( String moveText: moves) {
+            ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, moveText);
+            String moveTextFromPath = pgnMarshaller.convertMoveToPgn(position, movePath);
+            Assertions.assertThat(moveTextFromPath).isEqualTo(moveText);
+            position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
+        }
+        
+    }
 }
