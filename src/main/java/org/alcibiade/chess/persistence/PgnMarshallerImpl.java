@@ -140,14 +140,14 @@ public class PgnMarshallerImpl implements PgnMarshaller {
 
         pgn.append(move.getDestination().getPgnCoordinates());
 
-        pgn.append(checkMark);
-
         if (pieceSrc.getType() == ChessPieceType.PAWN && ((move.getDestination().getRow() == 7 && pieceSrc.getSide()
                 == ChessSide.WHITE)
                 || (move.getDestination().getRow() == 0 && pieceSrc.getSide() == ChessSide.BLACK))) {
             pgn.append("=");
             pgn.append(move.getPromotedPieceType().getShortName().toUpperCase());
         }
+
+        pgn.append(checkMark);
 
         if (log.isDebugEnabled()) {
             log.debug("Position is " + position.toString());

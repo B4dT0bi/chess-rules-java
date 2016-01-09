@@ -96,7 +96,7 @@ public class PgnMarshallerImplTest {
         assertEquals(ChessPieceType.QUEEN, movePathQ.getPromotedPieceType());
         assertEquals("g7", movePathQ.getSource().getPgnCoordinates());
         assertEquals("h8", movePathQ.getDestination().getPgnCoordinates());
-        assertEquals("gxh8+=Q", pgnMarshaller.convertMoveToPgn(model, movePathQ));
+        assertEquals("gxh8=Q+", pgnMarshaller.convertMoveToPgn(model, movePathQ));
 
         ChessMovePath movePathN = pgnMarshaller.convertPgnToMove(model, "Pg7xh8=N");
         assertEquals(ChessPieceType.KNIGHT, movePathN.getPromotedPieceType());
@@ -309,7 +309,7 @@ public class PgnMarshallerImplTest {
                 new ChessBoardCoord("c1"),
                 ChessPieceType.KNIGHT);
 
-        assertEquals("dxc1+=N", pgnMarshaller.convertMoveToPgn(model, promotionMovePath));
+        assertEquals("dxc1=N+", pgnMarshaller.convertMoveToPgn(model, promotionMovePath));
     }
 
     @Test
@@ -445,8 +445,8 @@ public class PgnMarshallerImplTest {
     @Test
     public void testIssue21() throws IllegalMoveException, PgnMoveException {
         ChessPosition position = chessRules.getInitialPosition();
-        String[] moves = {"e4", "Nc6", "Nc3", "Nf6", "Nf3", "d5", "d4", "Nxe4", "Nxe4", 
-                "dxe4", "Bh6", "gxh6", "Ba6", "exf3", "Qd3", "fxg2", "Qxh7", "gxh1+=Q", "Ke2"};
+        String[] moves = {"e4", "Nc6", "Nc3", "Nf6", "Nf3", "d5", "d4", "Nxe4", "Nxe4",
+                "dxe4", "Bh6", "gxh6", "Ba6", "exf3", "Qd3", "fxg2", "Qxh7", "gxh1=Q+", "Ke2"};
         
         for ( String moveText: moves) {
             ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, moveText);
