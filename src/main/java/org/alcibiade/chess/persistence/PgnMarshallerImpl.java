@@ -1,7 +1,10 @@
 package org.alcibiade.chess.persistence;
 
 import org.alcibiade.chess.model.*;
-import org.alcibiade.chess.rules.*;
+import org.alcibiade.chess.rules.Castling;
+import org.alcibiade.chess.rules.ChessHelper;
+import org.alcibiade.chess.rules.ChessRules;
+import org.alcibiade.chess.rules.PieceLocator;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -73,7 +76,8 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         ChessPiece pieceSrc = position.getPiece(move.getSource());
         ChessPiece pieceDst = position.getPiece(move.getDestination());
         PieceLocator pieceLocator = new PieceLocator(position);
-        PieceMoveManager moveManager = new PieceMoveManager(position);
+
+        Set<ChessMovePath> availableMoves = chessRules.getAvailableMoves(position);
 
         // Basically, any move to an occupied target is a capture.
         boolean isCapture = pieceDst != null;
@@ -103,8 +107,9 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         Collection<ChessBoardCoord> samePieces = pieceLocator.locatePiece(pieceSrc);
         samePieces.remove(move.getSource());
         for (ChessBoardCoord samePiece : samePieces) {
-            Set<ChessBoardCoord> reachable = moveManager.getReachableSquares(samePiece, chessRules);
-            if (reachable.contains(move.getDestination())) {
+            ChessMovePath samePieceMove = new ChessMovePath(samePiece, move.getDestination());
+
+            if (availableMoves.contains(samePieceMove)) {
                 otherPieceCanReach = true;
 
                 if (samePiece.getCol() == source.getCol()) {

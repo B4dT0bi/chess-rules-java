@@ -441,19 +441,34 @@ public class PgnMarshallerImplTest {
         }
 
     }
-    
+
     @Test
     public void testIssue21() throws IllegalMoveException, PgnMoveException {
         ChessPosition position = chessRules.getInitialPosition();
         String[] moves = {"e4", "Nc6", "Nc3", "Nf6", "Nf3", "d5", "d4", "Nxe4", "Nxe4",
                 "dxe4", "Bh6", "gxh6", "Ba6", "exf3", "Qd3", "fxg2", "Qxh7", "gxh1=Q+", "Ke2"};
-        
-        for ( String moveText: moves) {
+
+        for (String moveText : moves) {
             ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, moveText);
             String moveTextFromPath = pgnMarshaller.convertMoveToPgn(position, movePath);
             Assertions.assertThat(moveTextFromPath).isEqualTo(moveText);
             position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
         }
-        
+
+    }
+
+    @Test
+    public void testColSelectorAndCheck() throws IllegalMoveException, PgnMoveException {
+        ChessPosition position = chessRules.getInitialPosition();
+        // Here Ne2 is not ambigous, as only Knight on col G can move, the other one would cause a check
+        String[] moves = {"d4", "Nf6", "c4", "e6", "Nc3", "Bb4", "e3", "b6", "Ne2"};
+
+        for (String moveText : moves) {
+            ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, moveText);
+            String moveTextFromPath = pgnMarshaller.convertMoveToPgn(position, movePath);
+            Assertions.assertThat(moveTextFromPath).isEqualTo(moveText);
+            position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
+        }
+
     }
 }
