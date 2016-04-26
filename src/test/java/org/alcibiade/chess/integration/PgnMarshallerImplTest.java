@@ -473,9 +473,8 @@ public class PgnMarshallerImplTest {
     }
 
     @Test
-    public void testTwoQueensOnSameRow() {
+    public void testThreeQueens() {
         ChessPosition position = chessRules.getInitialPosition();
-        // Here Ne2 is not ambigous, as only Knight on col G can move, the other one would cause a check
         String[] moves = {"e4", "Na6",
                 "e5", "f5",
                 "e6", "b5",
@@ -495,8 +494,7 @@ public class PgnMarshallerImplTest {
                 "d7", "g3",
                 "Qg7", "gxh2",
                 "Qf8+", "Kc7",
-                "d8=Q+", "Kc6",
-                "Qfd6+"};
+                "d8=Q+", "Kc6"};
 
         for (String moveText : moves) {
             ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, moveText);
@@ -505,5 +503,16 @@ public class PgnMarshallerImplTest {
             position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
         }
 
+        ChessMovePath moveD8 = new ChessMovePath("d8", "d6");
+        ChessMovePath moveF8 = new ChessMovePath("f8", "d6");
+        ChessMovePath moveD1 = new ChessMovePath("d1", "d6");
+
+        Assertions.assertThat(pgnMarshaller.convertPgnToMove(position, "Qd8d6+")).isEqualTo(moveD8);
+        Assertions.assertThat(pgnMarshaller.convertPgnToMove(position, "Qfd6+")).isEqualTo(moveF8);
+        Assertions.assertThat(pgnMarshaller.convertPgnToMove(position, "Q1d6+")).isEqualTo(moveD1);
+
+        Assertions.assertThat(pgnMarshaller.convertMoveToPgn(position, moveD8)).isEqualTo("Qd8d6+");
+        Assertions.assertThat(pgnMarshaller.convertMoveToPgn(position, moveF8)).isEqualTo("Qfd6+");
+        Assertions.assertThat(pgnMarshaller.convertMoveToPgn(position, moveD1)).isEqualTo("Q1d6+");
     }
 }
