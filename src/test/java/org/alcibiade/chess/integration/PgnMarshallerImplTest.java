@@ -471,4 +471,39 @@ public class PgnMarshallerImplTest {
         }
 
     }
+
+    @Test
+    public void testTwoQueensOnSameRow() {
+        ChessPosition position = chessRules.getInitialPosition();
+        // Here Ne2 is not ambigous, as only Knight on col G can move, the other one would cause a check
+        String[] moves = {"e4", "Na6",
+                "e5", "f5",
+                "e6", "b5",
+                "exd7+", "Kf7",
+                "dxc8=Q", "f4",
+                "Qxd8", "g5",
+                "Qxa8", "g4",
+                "Qd5+", "Ke8",
+                "Qxg8", "Nc5",
+                "Qxh8", "Nb3",
+                "Qxh7", "c6",
+                "cxb3", "e6",
+                "d4", "Kd8",
+                "d5", "Bh6",
+                "d6", "c5",
+                "Qxh6", "a6",
+                "d7", "g3",
+                "Qg7", "gxh2",
+                "Qf8+", "Kc7",
+                "d8=Q+", "Kc6",
+                "Qfd6+"};
+
+        for (String moveText : moves) {
+            ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, moveText);
+            String moveTextFromPath = pgnMarshaller.convertMoveToPgn(position, movePath);
+            Assertions.assertThat(moveTextFromPath).isEqualTo(moveText);
+            position = ChessHelper.applyMoveAndSwitch(chessRules, position, movePath);
+        }
+
+    }
 }
