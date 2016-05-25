@@ -41,7 +41,7 @@ public class CraftyEngineImpl implements ChessEngineController {
 
     @PostConstruct
     public void validateCompatibility() throws IOException {
-        try (ExternalProcess process = externalProcessFactory.run(craftyCommand)) {
+        try (ExternalProcess process = externalProcessFactory.run(craftyCommand, "log off", "ponder off")) {
             String version = process.read(Pattern.compile("Crafty v(.*?) .*", Pattern.CASE_INSENSITIVE));
             process.write("exit\n");
             log.info("Detected crafty Chess engine: " + version);
@@ -51,7 +51,7 @@ public class CraftyEngineImpl implements ChessEngineController {
     @Override
     public String computeNextMove(int depth, int random, Collection<String> game) throws ChessEngineFailureException {
         Pattern nextMovePattern = Pattern.compile(MYMOVE_PATTERN);
-        try (ExternalProcess externalProcess = externalProcessFactory.run(craftyCommand, "ponder off", "sd " + depth)) {
+        try (ExternalProcess externalProcess = externalProcessFactory.run(craftyCommand, "log off", "ponder off", "sd " + depth)) {
             ChessPosition position = ChessHelper.movesToPosition(chessRules, pgnMarshaller, game);
             externalProcess.write("setboard " + fenMarshaller.convertPositionToString(position) + "\n");
             externalProcess.write("go\n");
