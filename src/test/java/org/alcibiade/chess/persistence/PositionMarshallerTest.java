@@ -21,12 +21,12 @@ public class PositionMarshallerTest {
 
         ChessPosition position1 = rules.getInitialPosition();
         String position1txt = positionMarshaller.convertPositionToString(position1);
-        Assertions.assertThat(positionMarshaller.convertStringToPosition(position1txt)).isEqualToComparingFieldByField(position1);
+        Assertions.assertThat(positionMarshaller.convertStringToPosition(position1txt)).isEqualTo(position1);
 
         ChessMovePath path1 = pgnMarshaller.convertPgnToMove(position1, "e4");
 
         ChessPosition position2 = ChessHelper.applyMoveAndSwitch(rules, position1, path1);
         String position2txt = positionMarshaller.convertPositionToString(position2);
-        Assertions.assertThat(positionMarshaller.convertStringToPosition(position2txt)).isEqualToComparingFieldByField(position2);
+        Assertions.assertThat(positionMarshaller.convertStringToPosition(position2txt)).isEqualTo(position2);
     }
 }

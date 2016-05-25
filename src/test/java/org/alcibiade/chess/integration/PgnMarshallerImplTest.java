@@ -249,11 +249,11 @@ public class PgnMarshallerImplTest {
         ChessGameStatus status = chessRules.getStatus(model);
         assertEquals(ChessGameStatus.OPEN, status);
 
-        assertEquals("q", pgnMarshaller.convertPgnToMove(model, "Pg7-g8").getPromotedPieceType().getShortName());
-        assertEquals("q", pgnMarshaller.convertPgnToMove(model, "Pg7-g8=Q").getPromotedPieceType().getShortName());
-        assertEquals("n", pgnMarshaller.convertPgnToMove(model, "Pg7-g8=N").getPromotedPieceType().getShortName());
-        assertEquals("q", pgnMarshaller.convertPgnToMove(model, "Pg7-g8Q").getPromotedPieceType().getShortName());
-        assertEquals("n", pgnMarshaller.convertPgnToMove(model, "Pg7-g8N").getPromotedPieceType().getShortName());
+        Assertions.assertThat(pgnMarshaller.convertPgnToMove(model, "Pg7-g8").getPromotedPieceType().getShortName()).isEqualTo('q');
+        Assertions.assertThat(pgnMarshaller.convertPgnToMove(model, "Pg7-g8=Q").getPromotedPieceType().getShortName()).isEqualTo('q');
+        Assertions.assertThat(pgnMarshaller.convertPgnToMove(model, "Pg7-g8=N").getPromotedPieceType().getShortName()).isEqualTo('n');
+        Assertions.assertThat(pgnMarshaller.convertPgnToMove(model, "Pg7-g8Q").getPromotedPieceType().getShortName()).isEqualTo('q');
+        Assertions.assertThat(pgnMarshaller.convertPgnToMove(model, "Pg7-g8N").getPromotedPieceType().getShortName()).isEqualTo('n');
     }
 
     @Test

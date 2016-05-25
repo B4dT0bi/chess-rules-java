@@ -2,6 +2,7 @@ package org.alcibiade.chess.rules;
 
 import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
+import org.alcibiade.chess.persistence.PgnMarshaller;
 
 import java.util.Collection;
 import java.util.Set;
@@ -59,6 +60,15 @@ public class ChessHelper {
         return rules.getAvailableMoves(targetPosition).isEmpty();
     }
 
+    /**
+     * Convenient method to apply a move on a position. Note: this won't update the next player side flag.
+     *
+     * @param rules    the chess rules component
+     * @param position the initial position
+     * @param move     the move to apply
+     * @return the board position after the move has been played
+     * @throws IllegalMoveException
+     */
     public static ChessBoardModel applyMove(ChessRules rules, ChessPosition position, ChessMovePath move)
             throws IllegalMoveException {
         ChessBoardModel nextPosition = new ChessBoardModel();
@@ -73,7 +83,7 @@ public class ChessHelper {
     }
 
     /**
-     * Convenient method to apply a move on a position.
+     * Convenient method to apply a move on a position and switch the next player flag.
      *
      * @param rules    the chess rules component
      * @param position the initial position
@@ -89,4 +99,14 @@ public class ChessHelper {
         return model;
     }
 
+    public static ChessPosition movesToPosition(ChessRules chessRules, PgnMarshaller pgnMarshaller, Collection<String> moves) {
+        ChessPosition position = chessRules.getInitialPosition();
+
+        for (String move : moves) {
+            ChessMovePath movePath = pgnMarshaller.convertPgnToMove(position, move);
+            position = applyMoveAndSwitch(chessRules, position, movePath);
+        }
+
+        return position;
+    }
 }

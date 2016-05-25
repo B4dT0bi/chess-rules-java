@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -27,6 +28,7 @@ public class PositionMarshallerImplTest {
     private ChessRules chessRules;
 
     @Autowired
+    @Qualifier("fixed")
     private PositionMarshaller positionMarshaller;
 
     @Autowired
@@ -40,7 +42,7 @@ public class PositionMarshallerImplTest {
                 .isEqualTo("wRNBQKBNRPPPPPPPP--------------------------------pppppppprnbqkbnrKQkq-");
         Assertions.assertThat(positionMarshaller.convertStringToPosition(
                 "wRNBQKBNRPPPPPPPP--------------------------------pppppppprnbqkbnrKQkq-"))
-                .isEqualToComparingFieldByField(position);
+                .isEqualTo(position);
 
         position = ChessHelper.applyMoveAndSwitch(chessRules, position,
                 pgnMarshaller.convertPgnToMove(position, "e4"));
@@ -48,7 +50,7 @@ public class PositionMarshallerImplTest {
         Assertions.assertThat(positionMarshaller.convertPositionToString(position))
                 .isEqualTo("bRNBQKBNRPPPP-PPP------------P-------------------pppppppprnbqkbnrKQkqe");
         Assertions.assertThat(positionMarshaller.convertStringToPosition("bRNBQKBNRPPPP-PPP------------P-------------------pppppppprnbqkbnrKQkqe"))
-                .isEqualToComparingFieldByField(position);
+                .isEqualTo(position);
 
         position = ChessHelper.applyMoveAndSwitch(chessRules, position,
                 pgnMarshaller.convertPgnToMove(position, "Nf6"));

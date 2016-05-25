@@ -96,7 +96,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
 
         StringBuilder pgn = new StringBuilder();
         if (pieceSrc.getType() != ChessPieceType.PAWN) {
-            pgn.append(pieceSrc.getType().getShortName().toUpperCase());
+            pgn.append(Character.toUpperCase(pieceSrc.getType().getShortName()));
         }
 
         boolean showSourceCol = false;
@@ -149,7 +149,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
                 == ChessSide.WHITE)
                 || (move.getDestination().getRow() == 0 && pieceSrc.getSide() == ChessSide.BLACK))) {
             pgn.append("=");
-            pgn.append(move.getPromotedPieceType().getShortName().toUpperCase());
+            pgn.append(Character.toUpperCase(move.getPromotedPieceType().getShortName()));
         }
 
         pgn.append(checkMark);
@@ -207,7 +207,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         if (pgnPiece.isEmpty() && !pgnSourceX.isEmpty() && !pgnSourceY.isEmpty()) {
             ChessBoardCoord sourceCoord = new ChessBoardCoord(pgnSourceX + pgnSourceY);
             ChessPiece piece = position.getPiece(sourceCoord);
-            pgnPiece = piece.getType().getShortName();
+            pgnPiece = piece.getType().getShortName().toString();
         }
 
         ChessBoardCoord dst = new ChessBoardCoord(pgnDestination);
@@ -223,12 +223,12 @@ public class PgnMarshallerImpl implements PgnMarshaller {
             assert piece != null;
             boolean selected = true;
             if (StringUtils.isEmpty(pgnPiece)) {
-                if (!StringUtils.equalsIgnoreCase(piece.getType().getShortName(),
-                        ChessPieceType.PAWN.getShortName())) {
+                if (!StringUtils.equalsIgnoreCase(piece.getType().getShortName().toString(),
+                        ChessPieceType.PAWN.getShortName().toString())) {
                     selected = false;
                 }
             } else {
-                if (!StringUtils.equalsIgnoreCase(piece.getType().getShortName(), pgnPiece)) {
+                if (!StringUtils.equalsIgnoreCase(piece.getType().getShortName().toString(), pgnPiece)) {
                     selected = false;
                 }
             }

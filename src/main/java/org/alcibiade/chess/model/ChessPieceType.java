@@ -2,35 +2,36 @@ package org.alcibiade.chess.model;
 
 public enum ChessPieceType {
 
-    PAWN("p", "pawn"), KNIGHT("n", "knight"), BISHOP("b", "bishop"), ROOK("r", "rook"), QUEEN("q", "queen"), KING("k",
-            "king");
-    private final String shortName;
+    PAWN('p', "pawn"), KNIGHT('n', "knight"), BISHOP('b', "bishop"),
+    ROOK('r', "rook"), QUEEN('q', "queen"), KING('k', "king");
+
+    private final Character shortName;
     private final String fullName;
 
-    ChessPieceType(String shortName, String fullName) {
+    ChessPieceType(Character shortName, String fullName) {
         this.shortName = shortName;
         this.fullName = fullName;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public String getFullName() {
-        return fullName;
     }
 
     public static ChessPieceType getPgnType(String s) {
         ChessPieceType result = null;
 
         for (ChessPieceType type : ChessPieceType.values()) {
-            if (type.getShortName().equalsIgnoreCase(s)) {
+            if (type.getShortName() == s.toLowerCase().charAt(0)) {
                 result = type;
                 break;
             }
         }
 
         return result;
+    }
+
+    public Character getShortName() {
+        return shortName;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     @Override

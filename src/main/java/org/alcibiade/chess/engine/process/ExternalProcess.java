@@ -71,7 +71,7 @@ public class ExternalProcess implements Closeable {
 
         do {
             String line = processReader.readLine();
-            log.trace("Process|OUT|" + line);
+            log.trace("Process|OUT|{}", line);
 
             if (line == null) {
                 eof = true;
@@ -90,6 +90,8 @@ public class ExternalProcess implements Closeable {
             }
 
         } while (result == null && !eof);
+
+        log.trace("Process|RES|{}", result);
 
         return result;
     }

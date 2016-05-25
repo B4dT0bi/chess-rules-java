@@ -13,6 +13,8 @@ public class ChessBoardModel implements ChessPosition, Serializable {
     private boolean[] castlingFlags = new boolean[4];
     private ChessBoardCoord lastPawnDMove = null;
     private ChessSide nextPlayerTurn = ChessSide.WHITE;
+    private int moveNumber;
+    private int halfMoveClock;
 
     public void setPosition(ChessPosition position) {
 
@@ -20,6 +22,8 @@ public class ChessBoardModel implements ChessPosition, Serializable {
             ChessBoardModel otherModel = (ChessBoardModel) position;
             System.arraycopy(otherModel.pieces, 0, this.pieces, 0, 64);
             System.arraycopy(otherModel.castlingFlags, 0, this.castlingFlags, 0, 4);
+            moveNumber = otherModel.moveNumber;
+            halfMoveClock = otherModel.halfMoveClock;
         } else {
             for (ChessBoardCoord coord : ChessBoardCoord.getAllBoardCoords()) {
                 setPiece(coord, position.getPiece(coord));
@@ -29,6 +33,9 @@ public class ChessBoardModel implements ChessPosition, Serializable {
             castlingFlags[1] = position.isCastlingAvailable(ChessSide.WHITE, false);
             castlingFlags[2] = position.isCastlingAvailable(ChessSide.BLACK, true);
             castlingFlags[3] = position.isCastlingAvailable(ChessSide.BLACK, false);
+
+            moveNumber = position.getMoveNumber();
+            halfMoveClock = position.getHalfMoveClock();
         }
 
         nextPlayerTurn = position.getNextPlayerTurn();
@@ -36,8 +43,26 @@ public class ChessBoardModel implements ChessPosition, Serializable {
     }
 
     @Override
-    public ChessPiece getPiece(ChessBoardCoord coord) {
-        return pieces[coord.getOffset()];
+    public int getMoveNumber() {
+        return this.moveNumber;
+    }
+
+    public void setMoveNumber(int moveNumber) {
+        this.moveNumber = moveNumber;
+    }
+
+    @Override
+    public int getHalfMoveClock() {
+        return halfMoveClock;
+    }
+
+    public void setHalfMoveClock(int halfMoveClock) {
+        this.halfMoveClock = halfMoveClock;
+    }
+
+    @Override
+    public ChessPiece getPiece(ChessBoardCoord coordinates) {
+        return pieces[coordinates.getOffset()];
     }
 
     public void setPiece(ChessBoardCoord coord, ChessPiece piece) {
@@ -93,6 +118,9 @@ public class ChessBoardModel implements ChessPosition, Serializable {
         lastPawnDMove = null;
 
         nextPlayerTurn = ChessSide.WHITE;
+
+        moveNumber = 1;
+        halfMoveClock = 0;
     }
 
     @Override
@@ -209,11 +237,7 @@ public class ChessBoardModel implements ChessPosition, Serializable {
                 if (piece == null) {
                     text.append('.');
                 } else {
-                    if (piece.getSide() == ChessSide.WHITE) {
-                        text.append(piece.getType().getShortName().toUpperCase());
-                    } else {
-                        text.append(piece.getType().getShortName().toLowerCase());
-                    }
+                    text.append(piece.getAsSingleCharacter());
                 }
 
                 text.append(' ');

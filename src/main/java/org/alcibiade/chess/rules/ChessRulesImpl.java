@@ -164,6 +164,22 @@ public class ChessRulesImpl implements ChessRules {
                     getSource().getRow())));
         }
 
+        // Increase move counter after black moves
+
+        if (player == ChessSide.BLACK) {
+            updates.add(new IncreaseMovesCounter());
+        }
+
+        // Act on the half move clock
+
+        if (targetPiece != null || pieceType == ChessPieceType.PAWN) {
+            // Piece taken or pawn move are resetting the clock
+            updates.add(new ResetHalfMoveClock());
+        } else {
+            // Other moves are increasing it
+            updates.add(new IncreaseHalfMoveClock());
+        }
+
         return updates;
     }
 

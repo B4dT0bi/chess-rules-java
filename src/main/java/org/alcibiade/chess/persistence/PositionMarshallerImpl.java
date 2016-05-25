@@ -1,6 +1,7 @@
 package org.alcibiade.chess.persistence;
 
 import org.alcibiade.chess.model.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
  * @author Yannick Kirschhoffer <alcibiade@alcibiade.org>
  */
 @Component
+@Qualifier("fixed")
 public class PositionMarshallerImpl implements PositionMarshaller {
 
     @Override
@@ -24,12 +26,7 @@ public class PositionMarshallerImpl implements PositionMarshaller {
                 if (piece == null) {
                     text.append("-");
                 } else {
-                    String pieceLetter = piece.getType().getShortName();
-
-                    if (piece.getSide() == ChessSide.WHITE) {
-                        pieceLetter = pieceLetter.toUpperCase();
-                    }
-
+                    Character pieceLetter = piece.getAsSingleCharacter();
                     text.append(pieceLetter);
                 }
             }
