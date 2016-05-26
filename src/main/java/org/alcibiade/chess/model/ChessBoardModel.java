@@ -186,7 +186,7 @@ public class ChessBoardModel implements ChessPosition, Serializable {
 
         // We don't hash castling flags, only the pieces positions
         for (int i = 0; i < 64; i++) {
-            result += ObjectUtils.hashCode(pieces[i]);
+            result += (i * ObjectUtils.hashCode(pieces[i]));
         }
 
         return result;

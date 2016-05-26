@@ -8,8 +8,7 @@ public class ChessPiece implements Serializable {
     private ChessPieceType type;
     private ChessSide side;
 
-    @SuppressWarnings("unused")
-    private ChessPiece() {
+    protected ChessPiece() {
     }
 
     public ChessPiece(ChessPieceType type, ChessSide side) {

@@ -5,7 +5,6 @@ import org.alcibiade.chess.model.ChessPiece;
 import org.alcibiade.chess.model.ChessPosition;
 import org.alcibiade.chess.model.ChessSide;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
@@ -191,12 +190,6 @@ public class PieceMoveManager {
             result = isOpponent(player, coord, dx, dy);
         }
 
-        return result;
-    }
-
-    private Collection<ChessBoardCoord> isOpponentOrFreeRecursive(ChessSide player, ChessBoardCoord coord, int dx, int dy) {
-        Collection<ChessBoardCoord> result = new ArrayList<>();
-        isOpponentOrFreeRecursive(result, player, coord, dx, dy);
         return result;
     }
 
