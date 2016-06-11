@@ -6,28 +6,25 @@ import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
 import org.alcibiade.chess.persistence.PgnMarshaller;
 import org.alcibiade.chess.rules.ChessRules;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"testContext.xml"})
-public class GnuChessEngineImplTest {
+public class ChessEnginesTest {
 
     public static final int FULL_GAMES = 10;
-    private Logger log = LoggerFactory.getLogger(GnuChessEngineImplTest.class);
+    private Logger log = LoggerFactory.getLogger(ChessEnginesTest.class);
     @Autowired
-    @Qualifier("gnuchess")
-    private ChessEngineController gnuchess;
+    private List<ChessEngineController> engines;
     @Autowired
     private ChessRules chessRules;
     @Autowired
@@ -36,37 +33,40 @@ public class GnuChessEngineImplTest {
 
     @Test
     public void testInitialMove() throws ChessEngineFailureException {
-        log.debug(gnuchess.computeNextMove(2, 0, new ArrayList<String>()));
+        for (ChessEngineController engine : engines) {
+            log.debug(engine.computeNextMove(2, 0, new ArrayList<String>()));
+        }
     }
 
     @Test
     public void testFullGames() throws ChessException {
+        for (ChessEngineController engine : engines) {
+            int success = 0;
+            int iterations = 0;
 
-        int success = 0;
-        int iterations = 0;
-
-        while (iterations < FULL_GAMES) {
-            iterations += 1;
-            try {
-                testFullGame();
-                success += 1;
-            } catch (ChessException e) {
-                log.debug(e.getLocalizedMessage(), e);
-                throw e;
+            while (iterations < FULL_GAMES) {
+                iterations += 1;
+                try {
+                    testFullGame(engine);
+                    success += 1;
+                } catch (ChessException e) {
+                    log.debug(e.getLocalizedMessage(), e);
+                    throw e;
+                }
             }
+
+            log.debug("  Games played: " + iterations);
+            log.debug("     Successes: " + success);
+
+            Assertions.assertThat(success).isEqualTo(iterations);
         }
-
-        log.debug("  Games played: " + iterations);
-        log.debug("     Successes: " + success);
-
-        assertEquals(iterations, success);
     }
 
-    public void testFullGame() throws ChessEngineFailureException, PgnMoveException,
+    public void testFullGame(ChessEngineController engine) throws ChessEngineFailureException, PgnMoveException,
             IllegalMoveException {
         ChessSide randomSide = random.nextBoolean() ? ChessSide.WHITE : ChessSide.BLACK;
 
-        log.debug("Starting gnuchess vs. gnuchess game");
+        log.debug("Starting RvR game for {}", engine);
         List<String> moves = new ArrayList<>();
 
         ChessBoardModel board = new ChessBoardModel();
@@ -84,7 +84,7 @@ public class GnuChessEngineImplTest {
                 ChessMovePath movePath = pickRandom(availableMoves);
                 move = pgnMarshaller.convertMoveToPgn(board, movePath);
             } else {
-                move = gnuchess.computeNextMove(5, 0, moves);
+                move = engine.computeNextMove(5, 0, moves);
             }
 
             log.debug("" + board.getNextPlayerTurn() + " move: " + move);
