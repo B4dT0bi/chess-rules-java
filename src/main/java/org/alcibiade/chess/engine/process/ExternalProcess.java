@@ -19,7 +19,7 @@ public class ExternalProcess implements Closeable {
     private BufferedReader processReader;
     private Timer watchdogTimer;
 
-    public ExternalProcess(long timeout, String... args) throws IOException {
+    protected ExternalProcess(long timeout, String... args) throws IOException {
         log.debug("Starting process " + Arrays.toString(args));
 
         ProcessBuilder pBuilder = new ProcessBuilder(args);
@@ -64,9 +64,8 @@ public class ExternalProcess implements Closeable {
         processWriter.flush();
     }
 
-
-    public String read(Pattern resultPattern, Pattern... errorPatterns) throws IOException {
-        String result = null;
+    public Matcher readForMatcher(Pattern resultPattern, Pattern... errorPatterns) throws IOException {
+        Matcher result = null;
         boolean eof = false;
 
         do {
@@ -85,7 +84,7 @@ public class ExternalProcess implements Closeable {
 
                 Matcher nextMoveMatcher = resultPattern.matcher(line);
                 if (nextMoveMatcher.matches()) {
-                    result = nextMoveMatcher.group(1);
+                    result = nextMoveMatcher;
                 }
             }
 
@@ -94,6 +93,11 @@ public class ExternalProcess implements Closeable {
         log.trace("Process|RES|{}", result);
 
         return result;
+    }
+
+    public String read(Pattern resultPattern, Pattern... errorPatterns) throws IOException {
+        Matcher matcher = readForMatcher(resultPattern, errorPatterns);
+        return matcher == null ? null : matcher.group(1);
     }
 
     private class InterruptProcessTask extends TimerTask {

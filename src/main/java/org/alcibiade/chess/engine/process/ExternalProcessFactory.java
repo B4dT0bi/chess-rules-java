@@ -16,6 +16,17 @@ public class ExternalProcessFactory {
     @Value("${process.timeout:30000}")
     private long timeout;
 
+    protected ExternalProcessFactory() {
+    }
+
+    public ExternalProcessFactory(long timeout) {
+        this.timeout = timeout;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
     public ExternalProcess run(String... args) throws IOException {
         return new ExternalProcess(timeout, args);
     }

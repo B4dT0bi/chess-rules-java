@@ -12,12 +12,15 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 @Qualifier("gnuchess")
-public class GnuChessEngineImpl implements ChessEngineController {
+public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
     private static final String MYMOVE_PATTERN = "My move is : (.*)";
     private Logger log = LoggerFactory.getLogger(GnuChessEngineImpl.class);
@@ -57,11 +60,50 @@ public class GnuChessEngineImpl implements ChessEngineController {
         }
     }
 
+    @Override
+    public EngineAnalysisReport analyze(Collection<String> moves) throws ChessEngineFailureException {
+        Pattern resultPattern = Pattern.compile("^12 (.*?) (.*?) (.*?) (.*)");
+        String inputScript = createAnalysisScript(moves, 12);
+
+        try (ExternalProcess externalProcess = externalProcessFactory.run(gnuchessCommand)) {
+            externalProcess.write(inputScript);
+            Matcher matcher = externalProcess.readForMatcher(resultPattern);
+            externalProcess.write("exit\n");
+            int score = Integer.parseInt(matcher.group(1));
+            String variant = matcher.group(4);
+            String[] variantMoves = StringUtils.split(variant);
+            List<String> variantList = Arrays.asList(variantMoves);
+            return new EngineAnalysisReport(score, variantList);
+        } catch (IOException ex) {
+            throw new ChessEngineFailureException(ex);
+        }
+    }
+
     private String createInputScript(Collection<String> moves, int depth) {
         StringBuilder script = new StringBuilder();
 
         script.append("easy\n");
         script.append("force\n");
+        script.append("depth ");
+        script.append(depth);
+        script.append("\n");
+
+        for (String move : moves) {
+            script.append(move);
+            script.append("\n");
+        }
+
+        script.append("go\n");
+
+        return script.toString();
+    }
+
+    private String createAnalysisScript(Collection<String> moves, int depth) {
+        StringBuilder script = new StringBuilder();
+
+        script.append("easy\n");
+        script.append("force\n");
+        script.append("post\n");
         script.append("depth ");
         script.append(depth);
         script.append("\n");
