@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -25,9 +24,9 @@ public class ExternalProcessTest {
     public void testProcessExecutionMatcher() throws IOException {
         ExternalProcessFactory externalProcessFactory = new ExternalProcessFactory();
         ExternalProcess process = externalProcessFactory.run("echo", "a", "b", "c");
-        Matcher result = process.readForMatcher(Pattern.compile("(.*?) . (.*?)"));
-        Assertions.assertThat(result.group(1)).isEqualTo("a");
-        Assertions.assertThat(result.group(2)).isEqualTo("c");
+        String[] result = process.readForArray(Pattern.compile("(.*?) . (.*?)"));
+        Assertions.assertThat(result[0]).isEqualTo("a");
+        Assertions.assertThat(result[1]).isEqualTo("c");
         process.close();
     }
 }

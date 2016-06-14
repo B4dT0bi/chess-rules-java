@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
@@ -67,10 +66,10 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
         try (ExternalProcess externalProcess = externalProcessFactory.run(gnuchessCommand)) {
             externalProcess.write(inputScript);
-            Matcher matcher = externalProcess.readForMatcher(resultPattern);
+            String[] values = externalProcess.readForArray(resultPattern);
             externalProcess.write("exit\n");
-            int score = Integer.parseInt(matcher.group(1));
-            String variant = matcher.group(4);
+            int score = Integer.parseInt(values[0]);
+            String variant = values[3];
             String[] variantMoves = StringUtils.split(variant);
             List<String> variantList = Arrays.asList(variantMoves);
             return new EngineAnalysisReport(score, variantList);

@@ -39,6 +39,17 @@ public class ExternalProcess implements Closeable {
         processReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
     }
 
+    private static String[] extractGroups(Matcher matcher) {
+        int groups = matcher.groupCount();
+        String[] values = new String[groups];
+
+        for (int groupId = 0; groupId < groups; groupId++) {
+            values[groupId] = matcher.group(groupId + 1);
+        }
+
+        return values;
+    }
+
     @Override
     public void close() throws IOException {
         watchdogTimer.cancel();
@@ -64,8 +75,8 @@ public class ExternalProcess implements Closeable {
         processWriter.flush();
     }
 
-    public Matcher readForMatcher(Pattern resultPattern, Pattern... errorPatterns) throws IOException {
-        Matcher result = null;
+    public String[] readForArray(Pattern resultPattern, Pattern... errorPatterns) throws IOException {
+        String[] result = null;
         boolean eof = false;
 
         do {
@@ -84,20 +95,20 @@ public class ExternalProcess implements Closeable {
 
                 Matcher nextMoveMatcher = resultPattern.matcher(line);
                 if (nextMoveMatcher.matches()) {
-                    result = nextMoveMatcher;
+                    result = extractGroups(nextMoveMatcher);
                 }
             }
 
         } while (result == null && !eof);
 
-        log.trace("Process|RES|{}", result);
+        log.trace("Process|RES|{}", (Object) result);
 
         return result;
     }
 
     public String read(Pattern resultPattern, Pattern... errorPatterns) throws IOException {
-        Matcher matcher = readForMatcher(resultPattern, errorPatterns);
-        return matcher == null ? null : matcher.group(1);
+        String[] values = readForArray(resultPattern, errorPatterns);
+        return values.length == 0 ? null : values[0];
     }
 
     private class InterruptProcessTask extends TimerTask {
