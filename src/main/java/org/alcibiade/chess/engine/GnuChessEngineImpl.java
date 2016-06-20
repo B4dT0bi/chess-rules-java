@@ -61,7 +61,7 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
     @Override
     public EngineAnalysisReport analyze(Collection<String> moves) throws ChessEngineFailureException {
-        Pattern resultPattern = Pattern.compile("^ *8\\.?\\s+(.*?)\\s+(.*?)\\s+(.*?)\\s+(.*)");
+        Pattern resultPattern = Pattern.compile("^ *8\\.?\\s+([+-0-9\\.]*?)\\s+([0-9\\.]*?)\\s+([0-9\\.]*?)\\s+(.*)");
         String inputScript = createAnalysisScript(moves, 8);
 
         try (ExternalProcess externalProcess = externalProcessFactory.run(gnuchessCommand)) {
