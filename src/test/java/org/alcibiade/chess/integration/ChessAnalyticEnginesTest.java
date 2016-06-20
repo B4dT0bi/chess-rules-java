@@ -28,7 +28,7 @@ public class ChessAnalyticEnginesTest {
         for (ChessEngineAnalyticalController engine : engines) {
             EngineAnalysisReport report = engine.analyze(new ArrayList<String>());
             logger.debug("Initial position report from {} is {}", engine, report);
-            Assertions.assertThat(report.getPositionScore()).isGreaterThan(0);
+            Assertions.assertThat(report.getPositionScore()).isGreaterThanOrEqualTo(0);
             Assertions.assertThat(report.getExpectedMoves()).hasSize(13);
         }
     }
