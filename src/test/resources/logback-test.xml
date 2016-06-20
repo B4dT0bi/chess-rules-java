@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-    <logger name="org.alcibiade.chess.engine.process.ExternalProcess" level="TRACE"/>
+    <logger name="org.alcibiade.chess.engine.process.ExternalProcess" level="OFF"/>
 
     <root level="OFF">
         <appender-ref ref="STDOUT" />
