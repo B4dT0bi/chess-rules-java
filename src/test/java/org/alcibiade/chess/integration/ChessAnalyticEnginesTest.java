@@ -4,6 +4,7 @@ import org.alcibiade.chess.engine.ChessEngineAnalyticalController;
 import org.alcibiade.chess.engine.ChessEngineFailureException;
 import org.alcibiade.chess.engine.EngineAnalysisReport;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -29,7 +30,14 @@ public class ChessAnalyticEnginesTest {
             EngineAnalysisReport report = engine.analyze(new ArrayList<String>());
             logger.debug("Initial position report from {} is {}", engine, report);
             Assertions.assertThat(report.getPositionScore()).isGreaterThanOrEqualTo(0);
-            Assertions.assertThat(report.getExpectedMoves()).hasSize(8);
+            Assertions.assertThat(report.getExpectedMoves()).hasSize(8).are(
+                    new Condition<String>() {
+                        @Override
+                        public boolean matches(String s) {
+                            String trimmed = s.trim();
+                            return trimmed.length() > 0;
+                        }
+                    });
         }
     }
 
