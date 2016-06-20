@@ -103,6 +103,7 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
         script.append("easy\n");
         script.append("force\n");
         script.append("post\n");
+        script.append("book off\n");
         script.append("depth ");
         script.append(depth);
         script.append("\n");
