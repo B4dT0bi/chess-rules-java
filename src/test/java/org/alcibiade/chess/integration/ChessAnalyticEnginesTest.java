@@ -3,6 +3,7 @@ package org.alcibiade.chess.integration;
 import org.alcibiade.chess.engine.ChessEngineAnalyticalController;
 import org.alcibiade.chess.engine.ChessEngineFailureException;
 import org.alcibiade.chess.engine.EngineAnalysisReport;
+import org.alcibiade.chess.engine.GnuChessEngineImpl;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.Test;
@@ -39,6 +40,15 @@ public class ChessAnalyticEnginesTest {
                         }
                     });
         }
+    }
+
+    @Test
+    public void testRegularExpression() {
+        Assertions.assertThat(GnuChessEngineImpl.ANALYSIS_RESULT_PATTERN.matcher("8 +0 5 72286 Nc3 Nf6 Nf3 Nc6 d4 d5 Bf4 Bf5").matches()).isTrue();
+        Assertions.assertThat(GnuChessEngineImpl.ANALYSIS_RESULT_PATTERN.matcher("8.         20/20        e4    ").matches()).isFalse();
+        Assertions.assertThat(GnuChessEngineImpl.ANALYSIS_RESULT_PATTERN.matcher("8&   0.53     -4    735335\t e4 Nc6 d4 Nf6 Nd2").matches()).isFalse();
+        Assertions.assertThat(GnuChessEngineImpl.ANALYSIS_RESULT_PATTERN.matcher("8   0     4    735335 e4 Nc6 d4 Nf6 Nd2").matches()).isTrue();
+        Assertions.assertThat(GnuChessEngineImpl.ANALYSIS_RESULT_PATTERN.matcher("8.   0.53     -4    735335\t e4 Nc6 d4 Nf6 Nd2").matches()).isTrue();
     }
 
 }

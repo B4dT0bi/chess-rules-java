@@ -21,7 +21,8 @@ import java.util.regex.Pattern;
 @Qualifier("gnuchess")
 public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
-    private static final String MYMOVE_PATTERN = "My move is : (.*)";
+    public static final Pattern MYMOVE_PATTERN = Pattern.compile("My move is : (.*)");
+    public static final Pattern ANALYSIS_RESULT_PATTERN = Pattern.compile("^ *8\\.?\\s+([+\\-0-9\\.]+?)\\s+(-?\\d+)\\s+(\\d+)\\s+(.*)");
     private Logger log = LoggerFactory.getLogger(GnuChessEngineImpl.class);
     @Value("${gnuchess.command:gnuchess}")
     private String gnuchessCommand;
@@ -48,10 +49,9 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
         }
 
         String inputScript = createInputScript(game, depth);
-        Pattern nextMovePattern = Pattern.compile(MYMOVE_PATTERN);
         try (ExternalProcess externalProcess = externalProcessFactory.run(gnuchessCommand)) {
             externalProcess.write(inputScript);
-            String nextMove = externalProcess.read(nextMovePattern);
+            String nextMove = externalProcess.read(MYMOVE_PATTERN);
             externalProcess.write("exit\n");
             return nextMove;
         } catch (IOException ex) {
@@ -61,7 +61,7 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
     @Override
     public EngineAnalysisReport analyze(Collection<String> moves) throws ChessEngineFailureException {
-        Pattern resultPattern = Pattern.compile("^ *8\\.?\\s+([+-0-9\\.]+?)\\s+([0-9\\.]+?)\\s+([0-9\\.]+?)\\s+(.+)");
+        Pattern resultPattern = ANALYSIS_RESULT_PATTERN;
         String inputScript = createAnalysisScript(moves, 8);
 
         try (ExternalProcess externalProcess = externalProcessFactory.run(gnuchessCommand)) {
