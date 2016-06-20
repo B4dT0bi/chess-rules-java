@@ -24,6 +24,7 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
     public static final Pattern MYMOVE_PATTERN = Pattern.compile("My move is : (.*)");
     public static final Pattern ANALYSIS_RESULT_PATTERN = Pattern.compile("^ *8\\.?\\s+([+\\-0-9\\.]+?)\\s+(-?\\d+)\\s+(\\d+)\\s+(.*)");
     private Logger log = LoggerFactory.getLogger(GnuChessEngineImpl.class);
+    private int majorVersion;
     @Value("${gnuchess.command:gnuchess}")
     private String gnuchessCommand;
     @Autowired
@@ -34,7 +35,11 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
         try (ExternalProcess process = externalProcessFactory.run(gnuchessCommand, "--version")) {
             String version = process.read(Pattern.compile("(.*)"));
 
-            if (StringUtils.startsWith(version, "GNU Chess 5.") || StringUtils.startsWith(version, "GNU Chess 6.")) {
+            if (StringUtils.startsWith(version, "GNU Chess 5.")) {
+                majorVersion = 5;
+                log.info("Detected GnuChess engine: " + version);
+            } else if (StringUtils.startsWith(version, "GNU Chess 6.")) {
+                majorVersion = 6;
                 log.info("Detected GnuChess engine: " + version);
             } else {
                 throw new IllegalStateException("Provided gnuchess not supported: " + version);
@@ -68,7 +73,7 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
             externalProcess.write(inputScript);
             String[] values = externalProcess.readForArray(resultPattern);
             externalProcess.write("exit\n");
-            int score = Integer.parseInt(values[0]);
+            int score = Integer.parseInt(majorVersion == 5 ? values[1] : values[0]);
             String variant = values[3];
             String[] variantMoves = StringUtils.split(variant);
             List<String> variantList = Arrays.asList(variantMoves);
