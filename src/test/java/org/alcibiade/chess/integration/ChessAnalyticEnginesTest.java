@@ -29,7 +29,7 @@ public class ChessAnalyticEnginesTest {
             EngineAnalysisReport report = engine.analyze(new ArrayList<String>());
             logger.debug("Initial position report from {} is {}", engine, report);
             Assertions.assertThat(report.getPositionScore()).isGreaterThanOrEqualTo(0);
-            Assertions.assertThat(report.getExpectedMoves()).hasSize(13);
+            Assertions.assertThat(report.getExpectedMoves()).hasSize(8);
         }
     }
 
