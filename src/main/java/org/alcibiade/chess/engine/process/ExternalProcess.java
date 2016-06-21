@@ -21,6 +21,7 @@ public class ExternalProcess implements Closeable {
 
     protected ExternalProcess(long timeout, String... args) throws IOException {
         log.debug("Starting process " + Arrays.toString(args));
+        log.debug("Timeout is {}ms", timeout);
 
         ProcessBuilder pBuilder = new ProcessBuilder(args);
         Map<String, String> env = pBuilder.environment();
