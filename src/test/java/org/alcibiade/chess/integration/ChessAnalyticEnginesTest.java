@@ -31,8 +31,14 @@ public class ChessAnalyticEnginesTest {
             EngineAnalysisReport report = engine.analyze(new ArrayList<String>());
             logger.debug("Initial position report from {} is {}", engine, report);
             Assertions.assertThat(report.getPositionScore()).isGreaterThanOrEqualTo(-20);
-            Assertions.assertThat(report.getExpectedMoves()).hasSize(8).are(
-                    new Condition<String>() {
+            Assertions.assertThat(report.getExpectedMoves())
+                    .is(new Condition<List>() {
+                        @Override
+                        public boolean matches(List l) {
+                            return l.size() >= 3;
+                        }
+                    })
+                    .are(new Condition<String>() {
                         @Override
                         public boolean matches(String s) {
                             String trimmed = s.trim();
