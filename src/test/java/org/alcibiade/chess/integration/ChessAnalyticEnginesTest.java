@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"testContext.xml"})
+@TestPropertySource(properties = {"process.timeout = 120000"})
 public class ChessAnalyticEnginesTest {
 
     private Logger logger = LoggerFactory.getLogger(ChessAnalyticEnginesTest.class);

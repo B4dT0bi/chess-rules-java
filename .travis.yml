@@ -10,4 +10,4 @@ before_install:
 - sudo ln -sf /usr/games/crafty /usr/bin/crafty
 - wget -O src/test/resources/book_1.02.pgn.gz http://ftp.gnu.org/gnu/chess/book_1.02.pgn.gz
 after_success:
-- mvn -Dprocess.timeout=120000 clean test jacoco:report coveralls:report
+- mvn clean test jacoco:report coveralls:report
