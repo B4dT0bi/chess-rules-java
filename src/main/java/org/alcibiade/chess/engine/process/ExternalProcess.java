@@ -71,12 +71,12 @@ public class ExternalProcess implements Closeable {
     }
 
     public void write(String text) throws IOException {
-        log.debug("Sending data:\n" + text);
+        log.trace("Sending data:\n" + text);
         processWriter.write(text);
         processWriter.flush();
     }
 
-    public String[] readForArray(Pattern resultPattern, Pattern... errorPatterns) throws IOException {
+    public String[] readForArray(Pattern resultPattern, Pattern stopPattern, Pattern... errorPatterns) throws IOException {
         String[] result = null;
         boolean eof = false;
 
@@ -98,9 +98,14 @@ public class ExternalProcess implements Closeable {
                 if (nextMoveMatcher.matches()) {
                     result = extractGroups(nextMoveMatcher);
                 }
+
+                Matcher stopMatcher = stopPattern.matcher(line);
+                if (stopMatcher.matches()) {
+                    eof = true;
+                }
             }
 
-        } while (result == null && !eof);
+        } while (!eof);
 
         log.trace("Process|RES|{}", (Object) result);
 
@@ -108,7 +113,7 @@ public class ExternalProcess implements Closeable {
     }
 
     public String read(Pattern resultPattern, Pattern... errorPatterns) throws IOException {
-        String[] values = readForArray(resultPattern, errorPatterns);
+        String[] values = readForArray(resultPattern, resultPattern, errorPatterns);
         return values.length == 0 ? null : values[0];
     }
 

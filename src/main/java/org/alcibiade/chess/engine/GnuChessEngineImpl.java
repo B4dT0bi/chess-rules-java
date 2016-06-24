@@ -2,6 +2,11 @@ package org.alcibiade.chess.engine;
 
 import org.alcibiade.chess.engine.process.ExternalProcess;
 import org.alcibiade.chess.engine.process.ExternalProcessFactory;
+import org.alcibiade.chess.model.ChessMovePath;
+import org.alcibiade.chess.model.ChessPosition;
+import org.alcibiade.chess.persistence.PgnMarshaller;
+import org.alcibiade.chess.rules.ChessHelper;
+import org.alcibiade.chess.rules.ChessRules;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,23 +17,26 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Component
 @Qualifier("gnuchess")
 public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
+    public static final int MATE_SCORE = -10_000;
     public static final Pattern MYMOVE_PATTERN = Pattern.compile("My move is : (.*)");
-    public static final Pattern ANALYSIS_RESULT_PATTERN = Pattern.compile("^ *8\\.?\\s+([+\\-0-9\\.]+?)\\s+(-?\\d+)\\s+(\\d+)\\s+(.*)");
-    private Logger log = LoggerFactory.getLogger(GnuChessEngineImpl.class);
+    public static final Pattern ANALYSIS_RESULT_PATTERN = Pattern.compile("^ *\\d+\\.?\\s+([+\\-0-9\\.]+?)\\s+(-?\\d+)\\s+(\\d+)\\s+(.*)");
+    private Logger logger = LoggerFactory.getLogger(GnuChessEngineImpl.class);
     private int majorVersion;
     @Value("${gnuchess.command:gnuchess}")
     private String gnuchessCommand;
     @Autowired
     private ExternalProcessFactory externalProcessFactory;
+    @Autowired
+    private ChessRules chessRules;
+    @Autowired
+    private PgnMarshaller pgnMarshaller;
 
     @PostConstruct
     public void validateCompatibility() throws IOException {
@@ -37,10 +45,10 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
             if (StringUtils.startsWith(version, "GNU Chess 5.")) {
                 majorVersion = 5;
-                log.info("Detected GnuChess engine: " + version);
+                logger.info("Detected GnuChess engine: " + version);
             } else if (StringUtils.startsWith(version, "GNU Chess 6.")) {
                 majorVersion = 6;
-                log.info("Detected GnuChess engine: " + version);
+                logger.info("Detected GnuChess engine: " + version);
             } else {
                 throw new IllegalStateException("Provided gnuchess not supported: " + version);
             }
@@ -66,12 +74,19 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
     @Override
     public EngineAnalysisReport analyze(Collection<String> moves) throws ChessEngineFailureException {
-        Pattern resultPattern = ANALYSIS_RESULT_PATTERN;
         String inputScript = createAnalysisScript(moves, 8);
+
+        // If checkmate, return the MATE score directly
+        ChessPosition position = ChessHelper.movesToPosition(chessRules, pgnMarshaller, moves);
+        Set<ChessMovePath> availableMoves = chessRules.getAvailableMoves(position);
+        logger.debug("Available moves for analysis are {}", availableMoves);
+        if (availableMoves.isEmpty()) {
+            return new EngineAnalysisReport(MATE_SCORE, new ArrayList<String>());
+        }
 
         try (ExternalProcess externalProcess = externalProcessFactory.run(gnuchessCommand)) {
             externalProcess.write(inputScript);
-            String[] values = externalProcess.readForArray(resultPattern);
+            String[] values = externalProcess.readForArray(ANALYSIS_RESULT_PATTERN, MYMOVE_PATTERN);
             externalProcess.write("exit\n");
             int score = Integer.parseInt(majorVersion == 5 ? values[1] : values[0]);
             String variant = values[3];

@@ -24,7 +24,7 @@ public class ExternalProcessTest {
     public void testProcessExecutionMatcher() throws IOException {
         ExternalProcessFactory externalProcessFactory = new ExternalProcessFactory(30_000);
         ExternalProcess process = externalProcessFactory.run("echo", "a", "b", "c");
-        String[] result = process.readForArray(Pattern.compile("(.*?) . (.*?)"));
+        String[] result = process.readForArray(Pattern.compile("(.*?) . (.*?)"), Pattern.compile(".*"));
         Assertions.assertThat(result[0]).isEqualTo("a");
         Assertions.assertThat(result[1]).isEqualTo("c");
         process.close();
