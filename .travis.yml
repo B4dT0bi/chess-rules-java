@@ -4,10 +4,11 @@ jdk:
 - oraclejdk7
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install -y gnuchess phalanx crafty
-- sudo ln -sf /usr/games/gnuchess /usr/bin/gnuchess
+- sudo apt-get install -y phalanx crafty
 - sudo ln -sf /usr/games/phalanx /usr/bin/phalanx
 - sudo ln -sf /usr/games/crafty /usr/bin/crafty
 - wget -O src/test/resources/book_1.02.pgn.gz http://ftp.gnu.org/gnu/chess/book_1.02.pgn.gz
+- ./src/main/scripts/install_gnuchess.sh
+- sudo ln -sf ./gnuchess-6.2.2/src/gnuchess /usr/bin/gnuchess
 after_success:
 - mvn clean test jacoco:report coveralls:report
