@@ -20,7 +20,7 @@ import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"testContext.xml"})
-@TestPropertySource(properties = {"process.timeout = 120000"})
+@TestPropertySource(properties = {"process.timeout = 120000", "gnuchess.analysis.depth = 3"})
 public class ChessAnalyticEnginesTest {
 
     private Logger logger = LoggerFactory.getLogger(ChessAnalyticEnginesTest.class);

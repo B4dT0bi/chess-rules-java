@@ -31,6 +31,8 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
     private int majorVersion;
     @Value("${gnuchess.command:gnuchess}")
     private String gnuchessCommand;
+    @Value("${gnuchess.analysis.depth:8}")
+    private int analysisDepth;
     @Autowired
     private ExternalProcessFactory externalProcessFactory;
     @Autowired
@@ -74,7 +76,7 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
     @Override
     public EngineAnalysisReport analyze(Collection<String> moves) throws ChessEngineFailureException {
-        String inputScript = createAnalysisScript(moves, 8);
+        String inputScript = createAnalysisScript(moves, this.analysisDepth);
 
         // If checkmate, return the MATE score directly
         ChessPosition position = ChessHelper.movesToPosition(chessRules, pgnMarshaller, moves);
