@@ -65,15 +65,10 @@ public class CraftyEngineImpl implements ChessEngineController {
         }
     }
 
-    private String createInputScript(Collection<String> moves, int depth) {
-        ChessPosition position = ChessHelper.movesToPosition(chessRules, pgnMarshaller, moves);
-
-        StringBuilder script = new StringBuilder();
-
-        script.append("setboard ").append(fenMarshaller.convertPositionToString(position)).append("\n");
-
-        script.append("go\n");
-
-        return script.toString();
+    @Override
+    public String toString() {
+        return "CraftyEngineImpl{" +
+                "craftyCommand='" + craftyCommand + '\'' +
+                '}';
     }
 }

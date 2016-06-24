@@ -64,7 +64,9 @@ public class PhalanxEngineImpl implements ChessEngineController {
 
         script.append("easy\n");
         script.append("force\n");
-        script.append("depth " + depth + "\n");
+        script.append("depth ");
+        script.append(depth);
+        script.append("\n");
 
         for (String move : moves) {
             script.append(move);
@@ -74,5 +76,12 @@ public class PhalanxEngineImpl implements ChessEngineController {
         script.append("go\n");
 
         return script.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "PhalanxEngineImpl{" +
+                "phalanxCommand='" + phalanxCommand + '\'' +
+                '}';
     }
 }

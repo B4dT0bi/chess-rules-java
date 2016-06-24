@@ -137,4 +137,12 @@ public class GnuChessEngineImpl implements ChessEngineAnalyticalController {
 
         return script.toString();
     }
+
+    @Override
+    public String toString() {
+        return "GnuChessEngineImpl{" +
+                "gnuchessCommand='" + gnuchessCommand + '\'' +
+                ", majorVersion=" + majorVersion +
+                '}';
+    }
 }
