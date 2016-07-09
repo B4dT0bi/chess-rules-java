@@ -99,6 +99,6 @@ public class FenMarshallerImpl implements PositionMarshaller {
 
     @Override
     public ChessPosition convertStringToPosition(String text) {
-        throw new UnsupportedOperationException("FEN string to position not supported yet.");
+        return new FenChessPosition(text);
     }
 }
