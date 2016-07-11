@@ -63,7 +63,7 @@ public class FenChessPosition implements ChessPosition {
         if ("-".equals(tokens[3])) {
             lastPawnDMove = null;
         } else {
-            lastPawnDMove = new ChessBoardCoord(tokens[3]);
+            lastPawnDMove = new ChessBoardCoord(tokens[3]).add(0, getNextPlayerTurn() == ChessSide.WHITE ? -1 : 1);
         }
 
         halfMoveClock = Integer.parseInt(tokens[4]);
