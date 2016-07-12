@@ -31,19 +31,30 @@ public class ChessHelper {
             nextPosition.nextPlayerTurn();
         }
 
+        return isCheck(rules, nextPosition);
+    }
+
+    /**
+     * Check if we already have a Check situation.
+     * @param rules the chess rules component
+     * @param position the current position
+     * @return true if the position is a check situation
+     */
+    public static boolean isCheck(ChessRules rules, ChessPosition position) {
         boolean check = false;
-        PieceLocator locator = new PieceLocator(nextPosition);
-        ChessPiece king = new ChessPiece(ChessPieceType.KING, nextPosition.getNextPlayerTurn());
+        PieceLocator locator = new PieceLocator(position);
+        ChessPiece king = new ChessPiece(ChessPieceType.KING, position.getNextPlayerTurn());
 
         Collection<ChessBoardCoord> kingPositions = locator.locatePiece(king);
         if (!kingPositions.isEmpty()) {
             ChessBoardCoord kingCoords = kingPositions.iterator().next();
-            Set<ChessBoardCoord> attackers = rules.getAttackingPieces(nextPosition, kingCoords);
+            Set<ChessBoardCoord> attackers = rules.getAttackingPieces(position, kingCoords);
 
             check = !attackers.isEmpty();
         }
 
         return check;
+
     }
 
     /**
@@ -56,8 +67,19 @@ public class ChessHelper {
      * @throws IllegalMoveException
      */
     public static boolean isCheckMate(ChessRules rules, ChessPosition position, ChessMovePath move) {
-        ChessPosition targetPosition = applyMoveAndSwitch(rules, position, move);
-        return rules.getAvailableMoves(targetPosition).isEmpty();
+        return isCheckMate(rules, applyMoveAndSwitch(rules, position, move));
+    }
+
+    /**
+     * Check if we have a Checkmate situation.
+     *
+     * @param rules    the chess rules component
+     * @param position the current position
+     * @return true if the position is a checkmate situation
+     * @throws IllegalMoveException
+     */
+    public static boolean isCheckMate(ChessRules rules, ChessPosition position) {
+        return rules.getAvailableMoves(position).isEmpty();
     }
 
     /**

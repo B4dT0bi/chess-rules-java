@@ -2,8 +2,6 @@ package org.alcibiade.chess.rules;
 
 import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.model.boardupdates.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ import java.util.Set;
 @Component
 public class ChessRulesImpl implements ChessRules {
 
-    private Logger log = LoggerFactory.getLogger(ChessRulesImpl.class);
 
     @Override
     public Set<ChessMovePath> getAvailableMoves(ChessPosition position) {
@@ -38,7 +35,6 @@ public class ChessRulesImpl implements ChessRules {
                         availableMoves.add(path);
                     }
                 } catch (IllegalMoveException ex) {
-                    log.warn("Failed to compute available moves", ex);
                 }
             }
         }

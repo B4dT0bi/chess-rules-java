@@ -1,8 +1,8 @@
 package org.alcibiade.chess.rules;
 
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.IllegalMoveException;
+import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.persistence.FenChessPosition;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ChessRulesTest {
@@ -28,5 +28,17 @@ public class ChessRulesTest {
 
         // Castling while rook has already moved
         ChessHelper.applyMoveAndSwitch(rules, position, new ChessMovePath("e1", "g1"));
+    }
+
+    @Test
+    public void testCastlingMove() {
+        ChessRules rules = new ChessRulesImpl();
+        ChessBoardModel chessBoardModel = new ChessBoardModel();
+        chessBoardModel.setPosition(new FenChessPosition("rnbqk2r/pp2ppbp/6p1/2p5/3P4/2PBPN2/P4PPP/R1BQK2R b KQkq - 2 8"));
+        chessBoardModel = ChessHelper.applyMoveAndSwitch(rules, chessBoardModel, new ChessMovePath("e8", "g8"));
+        Assert.assertFalse(chessBoardModel.isCastlingAvailable(ChessSide.BLACK, true));
+        Assert.assertFalse(chessBoardModel.isCastlingAvailable(ChessSide.BLACK, false));
+        Assert.assertTrue(chessBoardModel.isCastlingAvailable(ChessSide.WHITE, true));
+        Assert.assertTrue(chessBoardModel.isCastlingAvailable(ChessSide.WHITE, false));
     }
 }
