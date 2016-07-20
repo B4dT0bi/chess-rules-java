@@ -1,6 +1,7 @@
 package org.alcibiade.chess.persistence;
 
 import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.persistence.pgn.*;
 import org.alcibiade.chess.rules.Castling;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.alcibiade.chess.rules.ChessRules;
@@ -15,12 +16,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.alcibiade.chess.persistence.SanHelper.getSanMove;
 
 @Component
 public class PgnMarshallerImpl implements PgnMarshaller {
@@ -278,7 +278,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
         pgn.append("\n");
 
         StringBuilder line = new StringBuilder();
-        int index = 0;
+        int index = 2;
 
         for (String move : moves) {
             if (index % 2 == 0) {
@@ -294,6 +294,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
                 pgn.append("\n");
                 line.setLength(0);
             }
+            index++;
         }
 
         pgn.append(line);
@@ -303,9 +304,72 @@ public class PgnMarshallerImpl implements PgnMarshaller {
     }
 
     @Override
+    public String exportGame(List<PgnTag> tags, AutoUpdateChessBoardModel chessBoardModel) {
+        List<PgnTag> pgnTags = new ArrayList<>(tags);
+        addDummyStr(pgnTags);
+        Collections.sort(pgnTags);
+
+        StringBuilder pgn = new StringBuilder();
+        for (PgnTag tag : pgnTags) {
+            pgn.append(tag.toString()).append('\n');
+        }
+        pgn.append('\n');
+
+        chessBoardModel.first();
+        int ply = 0;
+        for (MoveHistoryEntry entry : chessBoardModel.getMoveHistoryEntries()) {
+            if (ply % 2 != 0 && chessBoardModel.getNextPlayerTurn() == ChessSide.WHITE) {
+                pgn.append((ply / 2) + 1).append("... ");
+            } else if (ply % 2 == 0) {
+                pgn.append((ply / 2) + 1).append(". ");
+            }
+            pgn.append(getSanMove(chessBoardModel.getRules(), chessBoardModel, entry.getMove())).append(" ");
+            chessBoardModel.next();
+            ply++;
+        }
+        return pgn.toString();
+    }
+
+
+    /**
+     * Ensure that we have the complete STR (Seven Tag Roaster).
+     *
+     * @param tags
+     */
+    private void addDummyStr(List<PgnTag> tags) {
+        List<String> str = Arrays.asList(PgnTag.STR_TAGS);
+        for (PgnTag tag : tags) {
+            str.remove(tag);
+        }
+        for (String tag : str) {
+            if (PgnTag.TAG_ID_EVENT.equals(tag)) {
+                tags.add(new EventTag());
+            } else if (PgnTag.TAG_ID_BLACK.equals(tag)) {
+                tags.add(new BlackTag("Unknown"));
+            } else if (PgnTag.TAG_ID_DATE.equals(tag)) {
+                tags.add(new DateTag());
+            } else if (PgnTag.TAG_ID_RESULT.equals(tag)) {
+                tags.add(new ResultTag());
+            } else if (PgnTag.TAG_ID_ROUND.equals(tag)) {
+                tags.add(new RoundTag());
+            } else if (PgnTag.TAG_ID_SITE.equals(tag)) {
+                tags.add(new SiteTag());
+            } else if (PgnTag.TAG_ID_WHITE.equals(tag)) {
+                tags.add(new WhiteTag("Unknown"));
+            }
+        }
+    }
+
+    @Override
     public Collection<String> importGame(InputStream pgnStream) throws IOException {
         PgnBookReader bookReader = new PgnBookReader(pgnStream);
         return bookReader.readGame().getMoves();
+    }
+
+    @Override
+    public PgnGameModel importGame(ChessRules rules, String pgnString) throws IOException {
+        PgnBookReader bookReader = new PgnBookReader(pgnString, rules);
+        return bookReader.readGame();
     }
 
     private void appendPgnHeader(StringBuilder text, String name, String value) {

@@ -53,4 +53,27 @@ public class ChessMovePath extends ChessBoardPath {
         return "ChessMovePath<" + getSource().getPgnCoordinates() + ":" + getDestination().getPgnCoordinates() + "="
                 + promotedPieceType + ">";
     }
+
+    /**
+     * Convert the ChessMovePath to Long Algebraic Notation.
+     * @return
+     */
+    public String toLanString() {
+        return getSource().getPgnCoordinates() + getDestination().getPgnCoordinates() + (promotedPieceType == null ? "" : promotedPieceType.getShortName());
+    }
+
+    /**
+     * Create a ChessMovePath from a Long Algebraic Notation.
+     * @param move the move in long algebraic notation
+     * @return
+     */
+    public static ChessMovePath fromLAN(final String move) {
+        ChessBoardCoord src = new ChessBoardCoord(move.substring(0, 2));
+        ChessBoardCoord dst = new ChessBoardCoord(move.substring(2, 4));
+        if (move.length() == 5) {
+            return new ChessMovePath(src, dst, ChessPieceType.getPgnType(move.substring(4)));
+        } else {
+            return new ChessMovePath(src, dst, null);
+        }
+    }
 }

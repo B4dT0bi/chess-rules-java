@@ -1,14 +1,14 @@
 package org.alcibiade.chess.persistence;
 
-import org.alcibiade.chess.model.ChessMovePath;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.IllegalMoveException;
-import org.alcibiade.chess.model.PgnMoveException;
+import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.persistence.pgn.PgnTag;
+import org.alcibiade.chess.rules.ChessRules;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public interface PgnMarshaller {
 
@@ -18,5 +18,9 @@ public interface PgnMarshaller {
 
     String exportGame(String white, String black, Date startDate, Collection<String> moves);
 
+    String exportGame(List<PgnTag> tags, AutoUpdateChessBoardModel chessBoardModel);
+
     Collection<String> importGame(InputStream pgnStream) throws IOException;
+
+    PgnGameModel importGame(ChessRules rules, String pgnString) throws IOException;
 }

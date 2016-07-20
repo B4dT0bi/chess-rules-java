@@ -1,8 +1,9 @@
 package org.alcibiade.chess.persistence;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import org.alcibiade.chess.model.ChessPosition;
+import org.alcibiade.chess.persistence.pgn.*;
+
+import java.util.*;
 
 /**
  * Model mapped to a typical PGN game file.
@@ -11,29 +12,26 @@ import java.util.List;
  */
 public class PgnGameModel {
 
-    private String whitePlayerName;
-    private String blackPlayerName;
-    private Date gameDate;
-    private String result;
-
-    private String event;
-    private String site;
-    private String round;
-
+    private Map<String, PgnTag> tagMap = new HashMap<>();
     private List<String> moves;
+    private ChessPosition position;
+
+    public PgnGameModel() {
+
+    }
 
     public PgnGameModel(
             String whitePlayerName, String blackPlayerName, Date gameDate, String result,
             String event, String site, String round,
             List<String> moves) {
-        this.whitePlayerName = whitePlayerName;
-        this.blackPlayerName = blackPlayerName;
-        this.gameDate = gameDate;
+        addTag(new WhiteTag(whitePlayerName));
+        addTag(new BlackTag(blackPlayerName));
+        addTag(new DateTag(gameDate));
         this.moves = moves;
-        this.result = result;
-        this.event = event;
-        this.site = site;
-        this.round = round;
+        addTag(new ResultTag(result));
+        addTag(new EventTag(event));
+        addTag(new SiteTag(site));
+        addTag(new RoundTag(round));
     }
 
     public List<String> getMoves() {
@@ -41,36 +39,62 @@ public class PgnGameModel {
     }
 
     public String getWhitePlayerName() {
-        return whitePlayerName;
+        return getTagValue(PgnTag.TAG_ID_WHITE);
     }
 
     public String getBlackPlayerName() {
-        return blackPlayerName;
+        return getTagValue(PgnTag.TAG_ID_BLACK);
     }
 
     public Date getGameDate() {
-        return gameDate;
+        return tagMap.get(PgnTag.TAG_ID_DATE) == null ? null : ((DateTag) tagMap.get(PgnTag.TAG_ID_DATE)).getDate();
     }
 
     public String getResult() {
-        return result;
+        return getTagValue(PgnTag.TAG_ID_RESULT);
     }
 
     public String getEvent() {
-        return event;
+        return getTagValue(PgnTag.TAG_ID_EVENT);
     }
 
     public String getSite() {
-        return site;
+        return getTagValue(PgnTag.TAG_ID_SITE);
     }
 
     public String getRound() {
-        return round;
+        return getTagValue(PgnTag.TAG_ID_ROUND);
+    }
+
+    public String getTagValue(String id) {
+        if (tagMap.containsKey(id)) {
+            return tagMap.get(id).getValue();
+        }
+        return null;
+    }
+
+    public Collection<PgnTag> getTags() {
+        return tagMap.values();
+    }
+
+    public void addTag(PgnTag tag) {
+        tagMap.put(tag.getId(), tag);
+    }
+
+    public ChessPosition getPosition() {
+        return position;
+    }
+
+    public void setPosition(ChessPosition position) {
+        this.position = position;
     }
 
     @Override
     public String toString() {
-        return String.format("%s vs. %s (%d moves, result: %s)", whitePlayerName, blackPlayerName, moves.size(), result);
+        return String.format("%s vs. %s (%d moves, result: %s)", getWhitePlayerName(), getBlackPlayerName(), moves.size(), getResult());
     }
 
+    public void setMoves(List<String> moves) {
+        this.moves = moves;
+    }
 }
