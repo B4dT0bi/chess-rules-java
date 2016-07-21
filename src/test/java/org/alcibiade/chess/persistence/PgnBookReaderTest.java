@@ -18,7 +18,7 @@ public class PgnBookReaderTest {
     @Test
     public void testCommentsWithoutRules() throws IOException {
         PgnBookReader bookReader = new PgnBookReader(getClass().getResourceAsStream("../integration/comments.pgn"));
-        PgnGameModel gameModel = bookReader.readGame();
+        PgnGameModel gameModel = bookReader.readGame(true);
         System.out.println(gameModel);
         Assertions.assertThat(gameModel).isNotNull();
         Assertions.assertThat(gameModel.getWhitePlayerName()).isEqualTo("Jan Willem te Kolste");
@@ -29,7 +29,7 @@ public class PgnBookReaderTest {
     @Test
     public void testCommentsWithRules() throws IOException {
         PgnBookReader bookReader = new PgnBookReader(getClass().getResourceAsStream("../integration/comments.pgn"), rules);
-        PgnGameModel gameModel = bookReader.readGame();
+        PgnGameModel gameModel = bookReader.readGame(true);
         Assertions.assertThat(gameModel).isNotNull();
         Assertions.assertThat(gameModel.getWhitePlayerName()).isEqualTo("Jan Willem te Kolste");
         Assertions.assertThat(gameModel.getBlackPlayerName()).isEqualTo("Carlos Torre Repetto");
@@ -39,13 +39,13 @@ public class PgnBookReaderTest {
     @Test
     public void testMultipleGames() throws IOException {
         PgnBookReader bookReader = new PgnBookReader(getClass().getResourceAsStream("../integration/multiple_games.pgn"), rules);
-        PgnGameModel gameModel = bookReader.readGame();
+        PgnGameModel gameModel = bookReader.readGame(true);
         Assertions.assertThat(gameModel).isNotNull();
         Assertions.assertThat(gameModel.getWhitePlayerName()).isEqualTo("Fischer, Robert J.");
         Assertions.assertThat(gameModel.getBlackPlayerName()).isEqualTo("Spassky, Boris V.");
         Assertions.assertThat(gameModel.getPosition()).isNotNull();
 
-        PgnGameModel gameModel2 = bookReader.readGame();
+        PgnGameModel gameModel2 = bookReader.readGame(true);
         Assertions.assertThat(gameModel2).isNotNull();
         Assertions.assertThat(gameModel2.getBlackPlayerName()).isEqualTo("GNU Chess 6.1.1");
         Assertions.assertThat(gameModel2.getPosition()).isNotNull();
@@ -55,7 +55,7 @@ public class PgnBookReaderTest {
     @Test
     public void testVariations() throws IOException {
         PgnBookReader bookReader = new PgnBookReader(getClass().getResourceAsStream("../integration/variations.pgn"), rules);
-        PgnGameModel gameModel = bookReader.readGame();
+        PgnGameModel gameModel = bookReader.readGame(true);
         Assertions.assertThat(gameModel).isNotNull();
         Assertions.assertThat(gameModel.getWhitePlayerName()).isEqualTo("Mate in one");
         Assertions.assertThat(gameModel.getPosition()).isNotNull();
@@ -64,7 +64,7 @@ public class PgnBookReaderTest {
     @Test
     public void testVariations2() throws IOException {
         PgnBookReader bookReader = new PgnBookReader(getClass().getResourceAsStream("../integration/variation_new_line.pgn"), rules);
-        PgnGameModel gameModel = bookReader.readGame();
+        PgnGameModel gameModel = bookReader.readGame(true);
         Assertions.assertThat(gameModel).isNotNull();
         Assertions.assertThat(gameModel.getWhitePlayerName()).isEqualTo("Mate in two");
         Assertions.assertThat(gameModel.getPosition()).isNotNull();
@@ -78,7 +78,7 @@ public class PgnBookReaderTest {
     @Test
     public void testVariations3() throws IOException {
         PgnBookReader bookReader = new PgnBookReader(getClass().getResourceAsStream("../integration/variation_multiple_lines.pgn"), rules);
-        PgnGameModel gameModel = bookReader.readGame();
+        PgnGameModel gameModel = bookReader.readGame(true);
         Assertions.assertThat(gameModel).isNotNull();
         Assertions.assertThat(gameModel.getWhitePlayerName()).isEqualTo("Mate in two");
         Assertions.assertThat(gameModel.getPosition()).isNotNull();
@@ -92,7 +92,7 @@ public class PgnBookReaderTest {
     @Test
     public void testNonAmbiguousCauseOfCheck() throws IOException {
         PgnBookReader bookReader = new PgnBookReader(getClass().getResourceAsStream("../integration/non_ambiguous_cause_of_check.pgn"), rules);
-        PgnGameModel gameModel = bookReader.readGame();
+        PgnGameModel gameModel = bookReader.readGame(true);
         Assertions.assertThat(gameModel).isNotNull();
         Assertions.assertThat(gameModel.getPosition()).isNotNull();
         List<String> expected = new ArrayList<>();
@@ -105,7 +105,7 @@ public class PgnBookReaderTest {
     @Test
     public void testNonAmbiguousCauseOfCheck2() throws IOException {
         PgnBookReader bookReader = new PgnBookReader(getClass().getResourceAsStream("../integration/non_ambiguous_cause_of_check2.pgn"), rules);
-        PgnGameModel gameModel = bookReader.readGame();
+        PgnGameModel gameModel = bookReader.readGame(true);
         Assertions.assertThat(gameModel).isNotNull();
         Assertions.assertThat(gameModel.getPosition()).isNotNull();
         List<String> expected = new ArrayList<>();

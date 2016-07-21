@@ -353,7 +353,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
     @Override
     public PgnGameModel importGame(ChessRules rules, String pgnString) throws IOException {
         PgnBookReader bookReader = new PgnBookReader(pgnString, rules);
-        return bookReader.readGame();
+        return bookReader.readGame(true);
     }
 
     private void appendPgnHeader(StringBuilder text, String name, String value) {
