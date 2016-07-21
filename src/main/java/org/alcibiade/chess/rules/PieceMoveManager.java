@@ -1,11 +1,9 @@
 package org.alcibiade.chess.rules;
 
-import org.alcibiade.chess.model.ChessBoardCoord;
-import org.alcibiade.chess.model.ChessPiece;
-import org.alcibiade.chess.model.ChessPosition;
-import org.alcibiade.chess.model.ChessSide;
+import org.alcibiade.chess.model.*;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -54,7 +52,27 @@ public class PieceMoveManager {
                     break;
             }
         }
-
+        // check for Check situations
+        if (rules != null) {
+            ChessBoardCoord kingCoords = null;
+            for (ChessBoardCoord boardCoord : ChessBoardCoord.getAllBoardCoords()) {
+                ChessPiece cp = position.getPiece(boardCoord);
+                if (cp != null && cp.getType() == ChessPieceType.KING && cp.getSide() == position.getNextPlayerTurn()) {
+                    kingCoords = boardCoord;
+                }
+            }
+            if (kingCoords == null) {
+                return reachable; // FIXME : something went wrong here (no king found?) but for now just return the data (maybe this doesnt happen at all)
+            }
+            Iterator<ChessBoardCoord> iterator = reachable.iterator();
+            while (iterator.hasNext()) {
+                ChessBoardCoord reachableDest = iterator.next();
+                ChessPosition pos2 = ChessHelper.applyMove(rules, position, new ChessMovePath(coord, reachableDest));
+                if (!rules.getAttackingPieces(pos2, kingCoords.equals(coord) ? reachableDest : kingCoords).isEmpty()) {
+                    iterator.remove();
+                }
+            }
+        }
         return reachable;
     }
 

@@ -2,8 +2,12 @@ package org.alcibiade.chess.rules;
 
 import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.persistence.FenChessPosition;
+import org.alcibiade.chess.persistence.FenMarshallerImpl;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Set;
 
 public class ChessRulesTest {
 
@@ -36,9 +40,53 @@ public class ChessRulesTest {
         ChessBoardModel chessBoardModel = new ChessBoardModel();
         chessBoardModel.setPosition(new FenChessPosition("rnbqk2r/pp2ppbp/6p1/2p5/3P4/2PBPN2/P4PPP/R1BQK2R b KQkq - 2 8"));
         chessBoardModel = ChessHelper.applyMoveAndSwitch(rules, chessBoardModel, new ChessMovePath("e8", "g8"));
-        Assert.assertFalse(chessBoardModel.isCastlingAvailable(ChessSide.BLACK, true));
-        Assert.assertFalse(chessBoardModel.isCastlingAvailable(ChessSide.BLACK, false));
-        Assert.assertTrue(chessBoardModel.isCastlingAvailable(ChessSide.WHITE, true));
-        Assert.assertTrue(chessBoardModel.isCastlingAvailable(ChessSide.WHITE, false));
+        Assertions.assertThat(chessBoardModel.isCastlingAvailable(ChessSide.BLACK, true)).isFalse();
+        Assertions.assertThat(chessBoardModel.isCastlingAvailable(ChessSide.BLACK, false)).isFalse();
+        Assertions.assertThat(chessBoardModel.isCastlingAvailable(ChessSide.WHITE, true)).isTrue();
+        Assertions.assertThat(chessBoardModel.isCastlingAvailable(ChessSide.WHITE, false)).isTrue();
+    }
+
+    @Test
+    public void testGetReachableDestinationsWithoutCheck() {
+        ChessRules rules = new ChessRulesImpl();
+        ChessBoardModel chessBoardModel = new ChessBoardModel();
+        chessBoardModel.setPosition(new FenChessPosition("4R1rk/2p2rQp/p2q1P2/2p4N/7P/2P5/P5P1/7K b - - 1 1"));
+
+        ChessBoardCoord rook = new ChessBoardCoord("g8");
+
+        Set<ChessBoardCoord> destinationsDontCheckForCheck = rules.getReachableDestinations(chessBoardModel, rook, false);
+        Assertions.assertThat(destinationsDontCheckForCheck).containsOnly(new ChessBoardCoord("e8"), new ChessBoardCoord("f8"), new ChessBoardCoord("g7"));
+
+        Set<ChessBoardCoord> destinationsAvoidCheck = rules.getReachableDestinations(chessBoardModel, rook, true);
+        Assertions.assertThat(destinationsAvoidCheck).isEmpty();
+
+        ChessBoardCoord rook2 = new ChessBoardCoord("f7");
+
+        Set<ChessBoardCoord> destinationsDontCheckForCheck2 = rules.getReachableDestinations(chessBoardModel, rook2, false);
+        Assertions.assertThat(destinationsDontCheckForCheck2).containsOnly(new ChessBoardCoord("f6"), new ChessBoardCoord("d7"), new ChessBoardCoord("e7"), new ChessBoardCoord("g7"), new ChessBoardCoord("f8"));
+
+        Set<ChessBoardCoord> destinationsAvoidCheck2 = rules.getReachableDestinations(chessBoardModel, rook2, true);
+        Assertions.assertThat(destinationsAvoidCheck2).containsOnly(new ChessBoardCoord("g7"));
+
+        chessBoardModel.setPosition(new FenChessPosition("8/4R2K/4kP2/2Q5/8/8/8/8 b - - 1 1"));
+
+        ChessBoardCoord king = new ChessBoardCoord("e6");
+
+        Set<ChessBoardCoord> destinationsDontCheckForCheckK = rules.getReachableDestinations(chessBoardModel, king, false);
+        Assertions.assertThat(destinationsDontCheckForCheckK).containsOnly(new ChessBoardCoord("d7"), new ChessBoardCoord("d6"), new ChessBoardCoord("d5"), new ChessBoardCoord("e7"), new ChessBoardCoord("e5"), new ChessBoardCoord("f7"), new ChessBoardCoord("f6"), new ChessBoardCoord("f5"));
+
+        Set<ChessBoardCoord> destinationsAvoidCheckK = rules.getReachableDestinations(chessBoardModel, king, true);
+        Assertions.assertThat(destinationsAvoidCheckK).containsOnly(new ChessBoardCoord("f6"));
+
+        chessBoardModel.setPosition(new FenChessPosition("8/8/7K/7n/7k/4N2n/5P1Q/8 b - - 0 1"));
+
+        ChessBoardCoord knight = new ChessBoardCoord("h3");
+
+        Set<ChessBoardCoord> destinationsDontCheckForCheckN = rules.getReachableDestinations(chessBoardModel, knight, false);
+        Assertions.assertThat(destinationsDontCheckForCheckN).containsOnly(new ChessBoardCoord("g1"), new ChessBoardCoord("g5"), new ChessBoardCoord("f2"), new ChessBoardCoord("f4"));
+
+        Set<ChessBoardCoord> destinationsAvoidCheckN = rules.getReachableDestinations(chessBoardModel, knight, true);
+        Assertions.assertThat(destinationsAvoidCheckN).isEmpty();
+
     }
 }
