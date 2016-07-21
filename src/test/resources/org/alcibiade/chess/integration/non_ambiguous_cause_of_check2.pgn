@@ -1,0 +1,23 @@
+[Event "#3015 Chess: 5334 Problems, Combinations, and Games by László Polgár"]
+[Site "Copyright 1994 Könemann"]
+[Date "1994.??.??"]
+[Round "-"]
+[White "Mate in two"]
+[Black "White to move"]
+[Result "*"]
+[FEN "8/8/7K/7n/7k/4N2n/5P1Q/8 w - - 0 1"]
+
+1.f3 {threatening Cg2#(#1)}
+    ( 1.Qg2 {threatening Cf5#(#1)} 1...Nxf2
+        ( 1...Ng3 2.fxg3#
+            ( 2.Qxg3# )
+        )
+        ( 1...Ng7 2.Qg3#
+            ( 2.Qg4# )
+        )
+    2.Nf5# )
+1...Nf4
+    ( 1...Nf6 2.Ng2#
+        ( 2.Nf5# )
+    )
+2.Nf5# *

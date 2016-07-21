@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by b4dt0bi on 19.07.16.
+ * @author Tobias Boese <tobias.boese@gmail.com>
  */
 public class PgnTagTest {
     @Test

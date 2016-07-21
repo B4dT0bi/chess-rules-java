@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 /**
- * Created by b4dt0bi on 13.07.16.
+ * @author Tobias Boese <tobias.boese@gmail.com>
  */
 public class AutoUpdateChessBoardModelTest {
     @Test

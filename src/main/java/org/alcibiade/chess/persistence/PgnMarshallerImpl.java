@@ -8,8 +8,6 @@ import org.alcibiade.chess.rules.ChessRules;
 import org.alcibiade.chess.rules.PieceLocator;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,8 +22,6 @@ import static org.alcibiade.chess.persistence.SanHelper.getSanMove;
 
 @Component
 public class PgnMarshallerImpl implements PgnMarshaller {
-
-    private Logger log = LoggerFactory.getLogger(PgnMarshallerImpl.class);
 
     @Autowired
     private ChessRules chessRules;
@@ -154,13 +150,6 @@ public class PgnMarshallerImpl implements PgnMarshaller {
 
         pgn.append(checkMark);
 
-        if (log.isDebugEnabled()) {
-            log.debug("Position is " + position.toString());
-            log.debug("Creating PGN notation for move " + move);
-            log.debug("Possible sources are " + samePieces);
-            log.debug("PGN: " + pgn);
-        }
-
         return pgn.toString();
     }
 
@@ -245,10 +234,6 @@ public class PgnMarshallerImpl implements PgnMarshaller {
             }
         }
         if (selectedSources.isEmpty()) {
-            if (log.isDebugEnabled()) {
-                log.debug(position.toString());
-                log.debug(availableMoves.toString());
-            }
             throw new PgnMoveException(pgnMove, "No piece can reach square " + pgnDestination);
         } else if (selectedSources.size() > 1) {
             throw new PgnMoveException(pgnMove, "Several pieces can reach square " + pgnDestination);
@@ -256,7 +241,6 @@ public class PgnMarshallerImpl implements PgnMarshaller {
 
         ChessPieceType promoted = ChessPieceType.QUEEN;
         if (StringUtils.isNotEmpty(pgnPromotion)) {
-            log.debug("PGN promotion is {}", pgnPromotion);
             assert pgnPromotion.length() == 1;
             promoted = ChessPieceType.getPgnType(pgnPromotion);
             assert promoted != null;
@@ -323,7 +307,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
             } else if (ply % 2 == 0) {
                 pgn.append((ply / 2) + 1).append(". ");
             }
-            pgn.append(getSanMove(chessBoardModel.getRules(), chessBoardModel, entry.getMove())).append(" ");
+            pgn.append(getSanMove(chessRules, chessBoardModel, entry.getMove())).append(" ");
             chessBoardModel.next();
             ply++;
         }

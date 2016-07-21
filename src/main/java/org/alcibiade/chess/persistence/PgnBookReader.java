@@ -6,6 +6,7 @@ import org.alcibiade.chess.rules.ChessRules;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -17,12 +18,15 @@ import static org.alcibiade.chess.persistence.PgnFormats.PATTERN_COMMENTS;
  * A PGN book is a file holding a collection of PGN games.
  *
  * @author Yannick Kirschhoffer <alcibiade@alcibiade.org>
+ * @author Tobias Boese <tobias.boese@gmail.com>
  */
 public class PgnBookReader implements Closeable {
 
     private BufferedReader bookReader;
 
     private ChessRules rules;
+
+    private String lastLine = null;
 
     public PgnBookReader(InputStream bookStream) throws UnsupportedEncodingException {
         this(new InputStreamReader(bookStream, "UTF-8"));
@@ -47,19 +51,45 @@ public class PgnBookReader implements Closeable {
         bookReader.close();
     }
 
+    /**
+     * Implement a lightweight PushBack reading mechanism.
+     * @return
+     * @throws IOException
+     */
+    private String readLine() throws IOException {
+        if (lastLine != null) {
+            String result = lastLine;
+            lastLine = null;
+            return result;
+        }
+        return bookReader.readLine();
+    }
+
     public PgnGameModel readGame() throws IOException {
+        return readGame(false);
+    }
+
+    /**
+     * Read the next Game from the PGN Stream.
+     * @param withChessposition when set to true create an Object of AutoUpdateChessBoardModel with all moves
+     * @return a PgnGameModel object if successful, otherwise null
+     * @throws IOException
+     */
+    public PgnGameModel readGame(final boolean withChessposition) throws IOException {
         Pattern header = Pattern.compile(PgnFormats.PATTERN_HEADER);
         List<String> moves = new LinkedList<>();
         boolean inComment = false;
+        int variationCounter = 0;
 
         PgnGameModel result = new PgnGameModel();
 
-        String line = bookReader.readLine();
+        String line = readLine();
         while (line != null) {
             String preprocessed = preprocess(line);
 
             // An empty line after the moves marks the end of the moves.
-            if (!moves.isEmpty() && preprocessed.isEmpty()) {
+            if (!moves.isEmpty() && line.startsWith("[")) {
+                lastLine = line;
                 break;
             }
 
@@ -89,7 +119,7 @@ public class PgnBookReader implements Closeable {
                 }
             } else {
                 // Remove move numbers from the contents.                
-                String[] tokens = preprocessed.replaceAll("(^| )[0-9]+\\.", " ").split(" +");
+                String[] tokens = preprocessed.replaceAll("(^| )[0-9]+\\.{1,3}", " ").split(" +");
 
                 for (String token : tokens) {
                     if (token.contains("{")) {
@@ -105,6 +135,16 @@ public class PgnBookReader implements Closeable {
                         continue;
                     }
 
+                    if ("(".equals(token)) {
+                        variationCounter++;
+                    } else if (")".equals(token)) {
+                        variationCounter--;
+                    }
+
+                    if (variationCounter > 0) {
+                        continue; // FIXME : handle variations correctly instead of just ignoring them
+                    }
+
                     // The first character may be a digit for end of game results like 1-0 or an "*"
                     if (!StringUtils.isEmpty(token) && Character.isLetter(token.charAt(0))) {
                         moves.add(token);
@@ -112,11 +152,11 @@ public class PgnBookReader implements Closeable {
                 }
             }
 
-            line = bookReader.readLine();
+            line = readLine();
         }
         if (moves.isEmpty()) return null;
         result.setMoves(moves);
-        if (rules != null) {
+        if (rules != null && withChessposition) {
             AutoUpdateChessBoardModel chessBoardModel = new AutoUpdateChessBoardModel(rules);
             String fen = result.getTagValue(PgnTag.TAG_ID_FEN);
             if (fen != null) {

@@ -4,21 +4,32 @@ import org.alcibiade.chess.model.*;
 import org.alcibiade.chess.rules.Castling;
 import org.alcibiade.chess.rules.ChessHelper;
 import org.alcibiade.chess.rules.ChessRules;
+import org.alcibiade.chess.rules.PieceLocator;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by b4dt0bi on 19.07.16.
+ * A helper class for converting SAN to LAN moves and vice versa.
+ *
+ * @author Tobias Boese <tobias.boese@gmail.com>
  */
 public class SanHelper {
     private static Pattern SAN_PATTERN = Pattern.compile("([PKNQRB]?)([a-h]?[1-8]?)([x]?)([a-h][1-8])((?:[=][NQRB])?)([+#]?)");
 
+    /**
+     * Convert a SAN move to a LAN move.
+     * @param rules the ChessRules to be used
+     * @param model the ChessBoardModel
+     * @param san the move in Short Algebraic Notation
+     * @return the move in Long Algebraic Notation
+     */
     public static String convertSanToLan(final ChessRules rules, final ChessBoardModel model, final String san) {
-        if (PgnFormats.PGN_CASTLE_Q.equals(san)) {
+        if (san == null) return null;
+        if (san.startsWith(PgnFormats.PGN_CASTLE_Q)) {
             return model.getNextPlayerTurn() == ChessSide.BLACK ? Castling.CASTLEBLACKQ.toLanString() : Castling.CASTLEWHITEQ.toLanString();
-        } else if (PgnFormats.PGN_CASTLE_K.equals(san)) {
+        } else if (san.startsWith(PgnFormats.PGN_CASTLE_K)) {
             return model.getNextPlayerTurn() == ChessSide.BLACK ? Castling.CASTLEBLACKK.toLanString() : Castling.CASTLEWHITEK.toLanString();
         }
 
@@ -44,6 +55,9 @@ public class SanHelper {
                 ChessBoardCoord coord = itAttacker.next();
                 if (pos.getPiece(coord).getType() != cpt) {
                     itAttacker.remove();
+                } else {
+                    Set<ChessBoardCoord> reachableCoords = rules.getReachableDestinations(model, coord, true);
+                    if (!reachableCoords.contains(dest)) itAttacker.remove();
                 }
             }
 
@@ -53,13 +67,18 @@ public class SanHelper {
                     throw new PgnMoveException("ambiguous move (" + san + ")");
                 }
             }
+            if (attacker.isEmpty()) {
+                throw new PgnMoveException("cannot find attacker of move " + san);
+            }
             src = attacker.iterator().next();
         } else {
             Set<ChessBoardCoord> possibleSources = new HashSet<>();
-            for (ChessBoardCoord coord : ChessBoardCoord.getAllBoardCoords()) {
+            PieceLocator locator = new PieceLocator(model);
+
+            for (ChessBoardCoord coord : locator.locatePieces(model.getNextPlayerTurn())) {
                 ChessPiece cp = model.getPiece(coord);
-                if (cp != null && cp.getType() == cpt && cp.getSide() == model.getNextPlayerTurn()) {
-                    Set<ChessBoardCoord> targets = rules.getReachableDestinations(pos, coord, false);
+                if (cp != null && cp.getType() == cpt) {
+                    Set<ChessBoardCoord> targets = rules.getReachableDestinations(model, coord, true);
                     if (targets.contains(dest))
                         possibleSources.add(coord);
                 }
@@ -70,6 +89,9 @@ public class SanHelper {
                 if (possibleSources.size() > 1) {
                     throw new PgnMoveException("ambiguous move (" + san + ")");
                 }
+            }
+            if (possibleSources.isEmpty()) {
+                throw new PgnMoveException("cannot find correct source of move " + san);
             }
             src = possibleSources.iterator().next();
         }

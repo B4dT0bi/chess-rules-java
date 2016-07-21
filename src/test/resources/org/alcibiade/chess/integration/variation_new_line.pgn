@@ -1,0 +1,13 @@
+[Event "#307 Chess: 5334 Problems, Combinations, and Games by László Polgár"]
+[Site "Copyright 1994 Könemann"]
+[Date "1994.??.??"]
+[Round "-"]
+[White "Mate in two"]
+[Black "White to move"]
+[Result "*"]
+[FEN "1Q6/8/8/8/8/k2K4/8/8 w - - 0 1"]
+
+1.Kc3 {threatening Qa7#(#1)} 1...Ka2
+    ( 1...Ka4 2.Qb4# )
+2.Qb2# *
+

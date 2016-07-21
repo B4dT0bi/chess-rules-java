@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by b4dt0bi on 13.07.16.
+ * @author Tobias Boese <tobias.boese@gmail.com>
  */
 public class PgnMarshallerTest {
     @Test

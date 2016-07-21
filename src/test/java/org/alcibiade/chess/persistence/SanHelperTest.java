@@ -1,6 +1,7 @@
 package org.alcibiade.chess.persistence;
 
 import org.alcibiade.chess.model.AutoUpdateChessBoardModel;
+import org.alcibiade.chess.model.ChessBoardModel;
 import org.alcibiade.chess.model.ChessMovePath;
 import org.alcibiade.chess.rules.Castling;
 import org.alcibiade.chess.rules.ChessRules;
@@ -9,16 +10,35 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 /**
- * Created by b4dt0bi on 19.07.16.
+ * @author Tobias Boese <tobias.boese@gmail.com>
  */
 public class SanHelperTest {
     @Test
-    public void test() {
+    public void testCastling() {
         Assertions.assertThat(SanHelper.getSanMove(null, null, Castling.CASTLEBLACKK)).isEqualTo("O-O");
         Assertions.assertThat(SanHelper.getSanMove(null, null, Castling.CASTLEBLACKQ)).isEqualTo("O-O-O");
         Assertions.assertThat(SanHelper.getSanMove(null, null, Castling.CASTLEWHITEK)).isEqualTo("O-O");
         Assertions.assertThat(SanHelper.getSanMove(null, null, Castling.CASTLEWHITEQ)).isEqualTo("O-O-O");
 
+        ChessBoardModel model = new ChessBoardModel();
+        model.setInitialPosition();
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O")).isEqualTo(Castling.CASTLEWHITEK.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O-O")).isEqualTo(Castling.CASTLEWHITEQ.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O+")).isEqualTo(Castling.CASTLEWHITEK.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O-O+")).isEqualTo(Castling.CASTLEWHITEQ.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O#")).isEqualTo(Castling.CASTLEWHITEK.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O-O#")).isEqualTo(Castling.CASTLEWHITEQ.toLanString());
+        model.nextPlayerTurn();
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O")).isEqualTo(Castling.CASTLEBLACKK.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O-O")).isEqualTo(Castling.CASTLEBLACKQ.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O+")).isEqualTo(Castling.CASTLEBLACKK.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O-O+")).isEqualTo(Castling.CASTLEBLACKQ.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O#")).isEqualTo(Castling.CASTLEBLACKK.toLanString());
+        Assertions.assertThat(SanHelper.convertSanToLan(null, model, "O-O-O#")).isEqualTo(Castling.CASTLEBLACKQ.toLanString());
+    }
+
+    @Test
+    public void test() {
         ChessRules rules = new ChessRulesImpl();
         AutoUpdateChessBoardModel model = new AutoUpdateChessBoardModel(rules);
         model.setInitialPosition();
