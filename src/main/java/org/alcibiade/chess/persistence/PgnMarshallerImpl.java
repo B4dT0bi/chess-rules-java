@@ -288,7 +288,7 @@ public class PgnMarshallerImpl implements PgnMarshaller {
     }
 
     @Override
-    public String exportGame(List<PgnTag> tags, AutoUpdateChessBoardModel chessBoardModel) {
+    public String exportGame(Collection<PgnTag> tags, AutoUpdateChessBoardModel chessBoardModel) {
         List<PgnTag> pgnTags = new ArrayList<>(tags);
         addDummyStr(pgnTags);
         Collections.sort(pgnTags);
@@ -320,10 +320,10 @@ public class PgnMarshallerImpl implements PgnMarshaller {
      *
      * @param tags
      */
-    private void addDummyStr(List<PgnTag> tags) {
-        List<String> str = Arrays.asList(PgnTag.STR_TAGS);
+    private void addDummyStr(Collection<PgnTag> tags) {
+        List<String> str = new ArrayList<String>(Arrays.asList(PgnTag.STR_TAGS));
         for (PgnTag tag : tags) {
-            str.remove(tag);
+            str.remove(tag.getId());
         }
         for (String tag : str) {
             if (PgnTag.TAG_ID_EVENT.equals(tag)) {

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 public interface PgnMarshaller {
 
@@ -18,7 +17,7 @@ public interface PgnMarshaller {
 
     String exportGame(String white, String black, Date startDate, Collection<String> moves);
 
-    String exportGame(List<PgnTag> tags, AutoUpdateChessBoardModel chessBoardModel);
+    String exportGame(Collection<PgnTag> tags, AutoUpdateChessBoardModel chessBoardModel);
 
     Collection<String> importGame(InputStream pgnStream) throws IOException;
 

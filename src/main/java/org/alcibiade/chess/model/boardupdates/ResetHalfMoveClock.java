@@ -21,4 +21,20 @@ public class ResetHalfMoveClock extends AbstractBoardUpdate {
     public String toString() {
         return "Reset half move clock";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ResetHalfMoveClock)) return false;
+
+        ResetHalfMoveClock that = (ResetHalfMoveClock) o;
+
+        return halfMoveClockBackup == that.halfMoveClockBackup;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return halfMoveClockBackup;
+    }
 }

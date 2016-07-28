@@ -1,12 +1,17 @@
 package org.alcibiade.chess.rules;
 
 import org.alcibiade.chess.model.*;
+import org.alcibiade.chess.model.boardupdates.ChessBoardUpdate;
+import org.alcibiade.chess.model.boardupdates.FlagUpdateCastling;
+import org.alcibiade.chess.model.boardupdates.IncreaseHalfMoveClock;
+import org.alcibiade.chess.model.boardupdates.PieceUpdateMove;
 import org.alcibiade.chess.persistence.FenChessPosition;
 import org.alcibiade.chess.persistence.FenMarshallerImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class ChessRulesTest {
@@ -88,5 +93,19 @@ public class ChessRulesTest {
         Set<ChessBoardCoord> destinationsAvoidCheckN = rules.getReachableDestinations(chessBoardModel, knight, true);
         Assertions.assertThat(destinationsAvoidCheckN).isEmpty();
 
+    }
+
+    @Test
+    public void testGetCastlingMove() {
+        ChessRules rules = new ChessRulesImpl();
+        ChessBoardModel model = new ChessBoardModel();
+        model.setPosition(new FenChessPosition("rnbqkbnr/pp2p2p/2pp1pp1/8/5P2/5NPB/PPPPP2P/RNBQK2R w KQkq -"));
+        Set<ChessBoardCoord> destinations = rules.getReachableDestinations(model, new ChessBoardCoord("e1"), true);
+        Assertions.assertThat(destinations).contains(new ChessBoardCoord("g1"));
+        destinations = rules.getReachableDestinations(model, new ChessBoardCoord("e1"), false);
+        Assertions.assertThat(destinations).contains(new ChessBoardCoord("g1"));
+
+        Collection<ChessBoardUpdate> updates = rules.getUpdatesForMove(model, Castling.CASTLEWHITEK);
+        Assertions.assertThat(updates).containsExactly(new PieceUpdateMove(new ChessBoardPath("h1", "f1")), new FlagUpdateCastling(ChessSide.WHITE, true), new FlagUpdateCastling(ChessSide.WHITE, false), new PieceUpdateMove(Castling.CASTLEWHITEK), new IncreaseHalfMoveClock());
     }
 }

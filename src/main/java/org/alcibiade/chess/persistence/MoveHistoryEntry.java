@@ -33,4 +33,8 @@ public class MoveHistoryEntry {
         Collections.reverse(rev);
         return rev;
     }
+
+    public MoveHistoryEntry clone() {
+        return new MoveHistoryEntry(new ChessMovePath(move.getSource(), move.getDestination()), updates);
+    }
 }

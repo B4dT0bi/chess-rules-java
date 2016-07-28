@@ -32,16 +32,16 @@ public class ModeTag extends PgnTag {
     }
 
     public ModeTag() {
-        super(TAG_ID_RESULT);
+        super("Mode");
     }
 
     public ModeTag(final String result) {
-        super(TAG_ID_RESULT);
+        super("Mode");
         setMode(result);
     }
 
     public ModeTag(final Mode mode) {
-        super(TAG_ID_RESULT);
+        super("Mode");
         setMode(mode);
     }
 

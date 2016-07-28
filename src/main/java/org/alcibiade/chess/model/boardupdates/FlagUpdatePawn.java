@@ -33,4 +33,23 @@ public class FlagUpdatePawn extends AbstractBoardUpdate {
     public String toString() {
         return "FlagUpdatePawn " + (pawnCoord == null ? "null" : pawnCoord.getPgnCoordinates());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FlagUpdatePawn)) return false;
+
+        FlagUpdatePawn that = (FlagUpdatePawn) o;
+
+        if (pawnCoord != null ? !pawnCoord.equals(that.pawnCoord) : that.pawnCoord != null) return false;
+        return backup != null ? backup.equals(that.backup) : that.backup == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pawnCoord != null ? pawnCoord.hashCode() : 0;
+        result = 31 * result + (backup != null ? backup.hashCode() : 0);
+        return result;
+    }
 }

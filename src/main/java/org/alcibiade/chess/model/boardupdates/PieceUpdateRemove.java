@@ -41,4 +41,23 @@ public class PieceUpdateRemove extends AbstractBoardUpdate {
     public String toString() {
         return "PieceUpdateRemove at " + coordinates;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PieceUpdateRemove)) return false;
+
+        PieceUpdateRemove that = (PieceUpdateRemove) o;
+
+        if (coordinates != null ? !coordinates.equals(that.coordinates) : that.coordinates != null) return false;
+        return removedPiece != null ? removedPiece.equals(that.removedPiece) : that.removedPiece == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = coordinates != null ? coordinates.hashCode() : 0;
+        result = 31 * result + (removedPiece != null ? removedPiece.hashCode() : 0);
+        return result;
+    }
 }

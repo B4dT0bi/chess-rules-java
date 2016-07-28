@@ -45,4 +45,23 @@ public class PieceUpdateAdd extends AbstractBoardUpdate {
     public String toString() {
         return "PieceUpdateAdd " + piece + " at " + coordinates;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PieceUpdateAdd)) return false;
+
+        PieceUpdateAdd that = (PieceUpdateAdd) o;
+
+        if (coordinates != null ? !coordinates.equals(that.coordinates) : that.coordinates != null) return false;
+        return piece != null ? piece.equals(that.piece) : that.piece == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = coordinates != null ? coordinates.hashCode() : 0;
+        result = 31 * result + (piece != null ? piece.hashCode() : 0);
+        return result;
+    }
 }

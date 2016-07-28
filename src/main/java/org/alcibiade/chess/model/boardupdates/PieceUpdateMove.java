@@ -41,4 +41,20 @@ public class PieceUpdateMove extends AbstractBoardUpdate {
     public String toString() {
         return "PieceUpdateMove with path " + path;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PieceUpdateMove)) return false;
+
+        PieceUpdateMove that = (PieceUpdateMove) o;
+
+        return path != null ? path.equals(that.path) : that.path == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return path != null ? path.hashCode() : 0;
+    }
 }

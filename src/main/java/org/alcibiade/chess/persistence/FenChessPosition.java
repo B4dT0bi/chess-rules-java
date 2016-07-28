@@ -66,8 +66,12 @@ public class FenChessPosition implements ChessPosition {
             lastPawnDMove = new ChessBoardCoord(tokens[3]).add(0, getNextPlayerTurn() == ChessSide.WHITE ? -1 : 1);
         }
 
-        halfMoveClock = Integer.parseInt(tokens[4]);
-        moveNumber = Integer.parseInt(tokens[5]);
+        if (tokens.length >= 5) {
+            halfMoveClock = Integer.parseInt(tokens[4]);
+        }
+        if (tokens.length >= 6) {
+            moveNumber = Integer.parseInt(tokens[5]);
+        }
     }
 
     private boolean isUpperCase(char c) {

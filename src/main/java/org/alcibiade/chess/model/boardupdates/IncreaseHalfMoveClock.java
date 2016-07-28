@@ -19,4 +19,14 @@ public class IncreaseHalfMoveClock extends AbstractBoardUpdate {
     public String toString() {
         return "Increase half move clock";
     }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return toString().equals(o.toString());
+    }
 }

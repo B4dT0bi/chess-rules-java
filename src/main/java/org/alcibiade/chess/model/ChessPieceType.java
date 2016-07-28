@@ -14,6 +14,7 @@ public enum ChessPieceType {
     }
 
     public static ChessPieceType getPgnType(String s) {
+        if (s == null || "".equals(s)) return null;
         ChessPieceType result = null;
 
         for (ChessPieceType type : ChessPieceType.values()) {

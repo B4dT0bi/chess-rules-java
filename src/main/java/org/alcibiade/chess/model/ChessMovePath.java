@@ -9,12 +9,21 @@ public class ChessMovePath extends ChessBoardPath {
     private ChessMovePath() {
     }
 
+    public ChessMovePath(String lanMove) {
+        this(lanMove.substring(0, 2), lanMove.substring(2, 4), lanMove.length() > 4 ? lanMove.substring(4, 5) : null);
+    }
+
     public ChessMovePath(ChessBoardCoord s, ChessBoardCoord d) {
         super(s, d);
     }
 
     public ChessMovePath(String s, String d) {
         super(s, d);
+    }
+
+    public ChessMovePath(String s, String d, String piece) {
+        super(s, d);
+        promotedPieceType = piece == null ? null : ChessPieceType.getPgnType(piece);
     }
 
     public ChessMovePath(ChessBoardCoord s, ChessBoardCoord d, ChessPieceType promotedPieceType) {
@@ -32,20 +41,22 @@ public class ChessMovePath extends ChessBoardPath {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        boolean result = false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessMovePath)) return false;
+        if (!super.equals(o)) return false;
 
-        if (obj instanceof ChessMovePath) {
-            ChessMovePath oPath = (ChessMovePath) obj;
-            result = super.equals(obj) && promotedPieceType == oPath.promotedPieceType;
-        }
+        ChessMovePath that = (ChessMovePath) o;
 
-        return result;
+        return promotedPieceType == that.promotedPieceType;
+
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode() + promotedPieceType.hashCode();
+        int result = super.hashCode();
+        result = 31 * result + (promotedPieceType != null ? promotedPieceType.hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -56,6 +67,7 @@ public class ChessMovePath extends ChessBoardPath {
 
     /**
      * Convert the ChessMovePath to Long Algebraic Notation.
+     *
      * @return
      */
     public String toLanString() {
@@ -64,6 +76,7 @@ public class ChessMovePath extends ChessBoardPath {
 
     /**
      * Create a ChessMovePath from a Long Algebraic Notation.
+     *
      * @param move the move in long algebraic notation
      * @return
      */

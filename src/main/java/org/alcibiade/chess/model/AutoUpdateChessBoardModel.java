@@ -18,6 +18,7 @@ public class AutoUpdateChessBoardModel extends ChessBoardModel {
 
     public AutoUpdateChessBoardModel(final ChessRules rules, final String... moves) {
         this.rules = rules;
+        setInitialPosition();
         if (moves != null) {
             for (String move : moves) {
                 update(move);
@@ -25,7 +26,17 @@ public class AutoUpdateChessBoardModel extends ChessBoardModel {
         }
     }
 
-    public void update(final ChessMovePath move) {
+    public AutoUpdateChessBoardModel(final ChessRules rules, ChessPosition position, final String... moves) {
+        this.rules = rules;
+        setPosition(position);
+        if (moves != null) {
+            for (String move : moves) {
+                update(move);
+            }
+        }
+    }
+
+    public Collection<ChessBoardUpdate> update(final ChessMovePath move) {
         Collection<ChessBoardUpdate> updates = rules.getUpdatesForMove(this, move);
         ChessBoardModel nextPosition = new ChessBoardModel();
         nextPosition.setPosition(this);
@@ -39,6 +50,7 @@ public class AutoUpdateChessBoardModel extends ChessBoardModel {
         }
         history.add(new MoveHistoryEntry(move, updates));
         position++;
+        return updates;
     }
 
     public void update(final String move) {
@@ -48,7 +60,7 @@ public class AutoUpdateChessBoardModel extends ChessBoardModel {
     /**
      * Jump to a previous position.
      */
-    public void prev() {
+    public Collection<ChessBoardUpdate> prev() {
         if (position > 0) {
             position--;
             MoveHistoryEntry moveHistoryEntry = history.get(position);
@@ -59,22 +71,28 @@ public class AutoUpdateChessBoardModel extends ChessBoardModel {
             }
             this.setPosition(nextPosition);
             nextPlayerTurn();
+            return moveHistoryEntry.getReverts();
         }
+        return null;
     }
 
-    public void first() {
+    public Collection<ChessBoardUpdate> first() {
+        Collection<ChessBoardUpdate> updates = new ArrayList<>();
         while (position > 0) {
-            prev();
+            updates.addAll(prev());
         }
+        return updates;
     }
 
-    public void last() {
+    public Collection<ChessBoardUpdate> last() {
+        Collection<ChessBoardUpdate> updates = new ArrayList<>();
         while (hasNext()) {
-            next();
+            updates.addAll(next());
         }
+        return updates;
     }
 
-    public void next() {
+    public Collection<ChessBoardUpdate> next() {
         if (hasNext()) {
             MoveHistoryEntry moveHistoryEntry = history.get(position);
             ChessBoardModel nextPosition = new ChessBoardModel();
@@ -85,7 +103,9 @@ public class AutoUpdateChessBoardModel extends ChessBoardModel {
             this.setPosition(nextPosition);
             nextPlayerTurn();
             position++;
+            return moveHistoryEntry.getUpdates();
         }
+        return null;
     }
 
     public boolean hasNext() {
@@ -106,5 +126,17 @@ public class AutoUpdateChessBoardModel extends ChessBoardModel {
 
     public ChessRules getRules() {
         return rules;
+    }
+
+    public void setPosition(ChessPosition otherPosition) {
+        super.setPosition(otherPosition);
+        if (otherPosition instanceof AutoUpdateChessBoardModel) {
+            this.rules = ((AutoUpdateChessBoardModel) otherPosition).rules;
+            this.position = ((AutoUpdateChessBoardModel) otherPosition).position;
+            this.history = new ArrayList<>();
+            for (MoveHistoryEntry entry : ((AutoUpdateChessBoardModel) otherPosition).getMoveHistoryEntries()) {
+                history.add(entry.clone());
+            }
+        }
     }
 }
